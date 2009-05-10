@@ -15,13 +15,32 @@
 #You should have received a copy of the GNU General Public License
 #along with pyFish.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Represents a player in a game of Warfish."""
+
 class Player:
     
     def __init__(self, name):
         assert isinstance(name, str)
         self._name = name
         self._cards = ()
+        self._territories = ()
         
     @property
     def name(self):
+        """The player's name."""
         return self._name
+    
+    @property
+    def cards(self):
+        """The cards a player currently has. The only information a player has about 
+        opponents cards is how many they have."""
+        return self._cards
+    
+    @property
+    def territories(self):
+        """The territories the player currently controls."""
+        return self._territories
+    
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

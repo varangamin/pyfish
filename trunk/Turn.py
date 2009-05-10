@@ -15,18 +15,18 @@
 #You should have received a copy of the GNU General Public License
 #along with pyFish.  If not, see <http://www.gnu.org/licenses/>.
 
-"""A map in Warfish is made up of continents."""
+"""A turn is made up of a collection of moves."""
 
-class Map:
-    
-    def __init__(self, continents):
-        self._continents = continents
+class Turn:
+
+    def __init__(self, moves, index=0):
+        self._moves = moves
+        self._index = index
         
     @property
-    def continents(self):
-        """A tuple of continents."""
-        return self._continents
-    
+    def moves(self):
+        return self._moves
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

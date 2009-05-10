@@ -15,6 +15,9 @@
 #You should have received a copy of the GNU General Public License
 #along with pyFish.  If not, see <http://www.gnu.org/licenses/>.
 
+"""A map is made up of many territories, each of which must have an owner
+and armies."""
+
 class Territory:
     
     def __init__(self, name, neighbors, owner, armies):
@@ -27,14 +30,17 @@ class Territory:
         
     @property
     def name(self):
+        """The name of the territory."""
         return self._name
     
     @property
     def neighbors(self):
+        """Each territory has a tuple of neighbor territories."""
         return self._neighbors
     
     @property
     def owner(self):
+        """The owner of the territory."""
         return self._owner
     
     @owner.setter
@@ -43,9 +49,14 @@ class Territory:
     
     @property
     def armies(self):
+        """The number of armies on a territory."""
         return self._armies
     
     @armies.setter
     def armies(self, armies):
         assert armies > 0, "A territory must have at least 1 army"
         self._armies = armies
+        
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
