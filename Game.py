@@ -15,17 +15,27 @@
 #You should have received a copy of the GNU General Public License
 #along with pyFish.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Represents a Warfish game. This is currently limited to only supporting 
+a standard game of Risk. While Warfish allows customization of rules this is not currently supported."""
 
 class Game:
     
-    def __init__(self, map, players):
+    def __init__(self, id, map, players):
+        """Initializes a game with the given map and players."""
+        self._id = id
         self._map = map
         self._players = players
         
     @property
     def map(self):
+        """The map the game is being played on."""
         return self._map
     
     @property
     def players(self):
+        """The players in the game. This includes both active and defeated players."""
         return self._players
+    
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

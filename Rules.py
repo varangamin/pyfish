@@ -15,17 +15,25 @@
 #You should have received a copy of the GNU General Public License
 #along with pyFish.  If not, see <http://www.gnu.org/licenses/>.
 
-"""A map in Warfish is made up of continents."""
+"""Warfish rules are highly customizable. The Rules class represents the rules
+for a particular game."""
 
-class Map:
-    
-    def __init__(self, continents):
-        self._continents = continents
+class Rules:
+
+    def __init__(self, numAttacks, numTransfers):
+        self._numAttacks = numAttacks
+        self._numTransfers = numTransfers
         
     @property
-    def continents(self):
-        """A tuple of continents."""
-        return self._continents
+    def numAttacks(self):
+        """The number of attacks that are allowed per turn.
+        A value of -1 means an infinite number are allowed."""
+        return self._numAttacks
+    
+    @property
+    def numTransfers(self):
+        """The number of transfers that are allowed per turn."""
+        return self._numTransfers
     
 if __name__ == "__main__":
     import doctest
