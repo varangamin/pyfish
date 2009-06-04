@@ -20,16 +20,27 @@
 import urllib.request
 import json
 from pyFish import Rules
+from pyFish import Map
+from pyFish import Game
     
-def as_rules(dct):
+def build_game_objects(dct):
     if 'numattacks' in dct:
-        return Rules.Rules(dct['numattacks'], dct['numtransfers'])
+        return Rules.Rules(dct)
+    if 'boardid' in dct:
+        return Map.Map([])
     return dct
 
-response = urllib.request.urlopen('http://warfish.net/war/services/rest?_method=warfish.tables.getDetails&gid=55808245&_format=json')
+response = urllib.request.urlopen('http://warfish.net/war/services/rest?_method=warfish.tables.getDetails&gid=55808245&sections=board,rules,map,continents&_format=json')
 html = response.read()
 print(json.dumps(bytes.decode(html), sort_keys=True, indent=4))
-rules = json.loads(bytes.decode(html), object_hook=as_rules)
+details = json.loads(bytes.decode(html), object_hook=build_game_objects)
 
-print(rules['_content']['rules'].numAttacks)
-print(rules)
+print(details)
+map = details['_content']['board']
+rules = details['_content']['rules'] 
+
+game = Game.Game(55808245, map, [], rules)
+print(game)
+print(game.rules.numAttacks)
+print(game.rules.cardScale)
+game.rules.cardScale

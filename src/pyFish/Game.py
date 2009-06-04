@@ -20,11 +20,12 @@ a standard game of Risk. While Warfish allows customization of rules this is not
 
 class Game:
     
-    def __init__(self, id, map, players):
+    def __init__(self, id, map, players, rules):
         """Initializes a game with the given map and players."""
         self._id = id
         self._map = map
         self._players = players
+        self._rules = rules
         
     @property
     def map(self):
@@ -35,6 +36,11 @@ class Game:
     def players(self):
         """The players in the game. This includes both active and defeated players."""
         return self._players
+    
+    @property
+    def rules(self):
+        """The rules for the game."""
+        return self._rules
     
 if __name__ == "__main__":
     import doctest

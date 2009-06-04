@@ -18,11 +18,25 @@
 """Warfish rules are highly customizable. The Rules class represents the rules
 for a particular game."""
 
+NONE, LIGHT, MODERATE, FOGGY, VERY, EXTREME = range(6) 
+
 class Rules:
 
-    def __init__(self, numAttacks, numTransfers):
-        self._numAttacks = numAttacks
-        self._numTransfers = numTransfers
+    def __init__(self, rulesDictionary):
+        """The following values in the dictionary are currently unknown and unmapped:
+            * keeppossession - I think this deals with keeping possession when abandoning territories but I am not sure.
+            * keeppossessiononexpire - I don't know how this differs from keeppossession"""
+        self._numAttacks = rulesDictionary['numattacks']
+        self._numTransfers = rulesDictionary['numtransfers']
+        self._preTransfers = rulesDictionary['pretransfer']
+        self._damageDiceAttack = rulesDictionary['afdie']
+        self._damageDiceDefend = rulesDictionary['dfdie']
+        self._allowAbandon = rulesDictionary['allowabandon'] != 0
+        self._cardScale = rulesDictionary['cardscale'].split(",")
+        self._numReserves = rulesDictionary['numreserves']
+        self._allowReturnToAttack = rulesDictionary['returntoattack'] != 0
+        self._maxArmiesPerCountry = rulesDictionary['maxpercountry']
+        self._fog = rulesDictionary['fog']
         
     @property
     def numAttacks(self):
@@ -34,6 +48,51 @@ class Rules:
     def numTransfers(self):
         """The number of transfers that are allowed per turn."""
         return self._numTransfers
+    
+    @property
+    def preTransfers(self):
+        """Used in blind-at-once games. Pre-transfers are transfers before the attack phase."""
+        return self._preTransfers
+    
+    @property
+    def damageDiceAttack(self):
+        """Only used with damage dice. The attacker needs more than this value."""
+        return self._damageDiceAttack
+    
+    @property
+    def damageDiceDefend(self):
+        """Only used with damage dice. The defender needs more than this value."""
+        return self._damageDiceDefend
+    
+    @property
+    def allowAbandon(self):
+        """Whether players are allowed to abandon territories or not."""
+        return self._allowAbandon
+    
+    @property
+    def cardScale(self):
+        """How card sets scale when traded in."""
+        return self._cardScale
+    
+    @property
+    def numReserves(self):
+        """The number of armies that are allowed to be stored in reserve."""
+        return self._numReserves
+    
+    @property
+    def allowReturnToAttack(self):
+        """Whether or not you can return to unit placement from the attack phase in turn-based play."""
+        return self._allowReturnToAttack
+    
+    @property
+    def maxArmiesPerCountry(self):
+        """The maximum number of armies you can have in one country. Warfish considers 65535 to be unlimited."""
+        return self._maxArmiesPerCountry
+    
+    @property
+    def fog(self):
+        """The fog level controls the what you can see on the board."""
+        return self._fog
     
 if __name__ == "__main__":
     import doctest
