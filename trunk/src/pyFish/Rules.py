@@ -37,6 +37,8 @@ class Rules:
         self._allowReturnToAttack = rulesDictionary['returntoattack'] != 0
         self._maxArmiesPerCountry = rulesDictionary['maxpercountry']
         self._fog = rulesDictionary['fog']
+        self._attackDieSides = rulesDictionary['adie']
+        self._defendDieSides = rulesDictionary['ddie']
         
     @property
     def numAttacks(self):
@@ -93,6 +95,16 @@ class Rules:
     def fog(self):
         """The fog level controls the what you can see on the board."""
         return self._fog
+    
+    @property
+    def attackDieSides(self):
+        """The number of sides on the attack die."""
+        return self._attackDieSides
+    
+    @property
+    def defendDieSides(self):
+        """The number of sides on the defend die."""
+        return self._defendDieSides
     
 if __name__ == "__main__":
     import doctest

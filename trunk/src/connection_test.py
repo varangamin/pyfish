@@ -30,7 +30,7 @@ def build_game_objects(dct):
         return Map.Map([])
     return dct
 
-response = urllib.request.urlopen('http://warfish.net/war/services/rest?_method=warfish.tables.getDetails&gid=55808245&sections=board,rules,map,continents&_format=json')
+response = urllib.request.urlopen('http://216.169.106.90/war/services/rest?_method=warfish.tables.getDetails&gid=55808245&sections=board,rules,map,continents&_format=json')
 html = response.read()
 print(json.dumps(bytes.decode(html), sort_keys=True, indent=4))
 details = json.loads(bytes.decode(html), object_hook=build_game_objects)
