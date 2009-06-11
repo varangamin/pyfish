@@ -15,17 +15,27 @@
 #You should have received a copy of the GNU General Public License
 #along with pyFish.  If not, see <http://www.gnu.org/licenses/>.
 
-"""A map in Warfish is made up of continents."""
+"""A map in Warfish is made up of territories, which can be organized into continents."""
+
+import json
+from pyFish import Territory
+from pyFish import Continent
 
 class Map:
     
-    def __init__(self, continents):
-        self._continents = continents
+    def __init__(self, mapDictionary, boardDictionary, continentsDictionary):
+        self._territories = tuple((Territory.Territory(item) for item in mapDictionary))
+        self._continents = tuple((Continent.Continent(item, self._territories) for item in continentsDictionary))
         
     @property
     def continents(self):
         """A tuple of continents."""
         return self._continents
+    
+    @property
+    def territories(self):
+        """All of the territories on the map."""
+        return self._territories
     
 if __name__ == "__main__":
     import doctest

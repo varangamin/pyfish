@@ -26,21 +26,20 @@ from pyFish import Game
 def build_game_objects(dct):
     if 'numattacks' in dct:
         return Rules.Rules(dct)
-    if 'boardid' in dct:
-        return Map.Map([])
+    if 'numterritories' in dct:
+        return Map.Map(dct['_content']['territory'])
     return dct
 
 response = urllib.request.urlopen('http://216.169.106.90/war/services/rest?_method=warfish.tables.getDetails&gid=55808245&sections=board,rules,map,continents&_format=json')
 html = response.read()
-print(json.dumps(bytes.decode(html), sort_keys=True, indent=4))
-details = json.loads(bytes.decode(html), object_hook=build_game_objects)
+details = json.loads(bytes.decode(html))
 
-print(details)
-map = details['_content']['board']
-rules = details['_content']['rules'] 
+map = Map.Map(details['_content']['map']['_content']['territory'], details['_content']['board']['_content']['border'], details['_content']['continents']['_content']['continent'])
+rules = Rules.Rules(details['_content']['rules']) 
 
 game = Game.Game(55808245, map, [], rules)
-print(game)
-print(game.rules.numAttacks)
-print(game.rules.cardScale)
-game.rules.cardScale
+print(game.map.territories)
+for continent in game.map.continents:
+    print(continent.name)
+    for territory in continent.territories:
+        print(" " * 5 + territory.name)

@@ -25,8 +25,12 @@ class Territory:
         self._name = name
         self._owner = owner
         self._neighbors = neighbors
-        assert armies > 0, "A territory must have at least 1 army"
         self._armies = armies
+
+    def __init__(self, territoryDictionary):
+        self._name = territoryDictionary['name']
+        self._maxUnits = territoryDictionary['maxunits']
+        self._id = territoryDictionary['id']
         
     @property
     def name(self):
@@ -54,8 +58,17 @@ class Territory:
     
     @armies.setter
     def armies(self, armies):
-        assert armies > 0, "A territory must have at least 1 army"
         self._armies = armies
+        
+    @property
+    def maxUnits(self):
+        """The max number of units allowed on the territory."""
+        return self._maxUnits
+    
+    @property
+    def id(self):
+        """The id Warfish gives the territory."""
+        return self._id
         
 if __name__ == "__main__":
     import doctest
