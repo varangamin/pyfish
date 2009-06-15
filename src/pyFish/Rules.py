@@ -23,96 +23,96 @@ TURN_BASED, AUTO, BLIND_AT_ONCE = range(3)
 
 class Rules:
 
-    def __init__(self, rulesDictionary):
+    def __init__(self, rules_dictionary):
         """The following values in the dictionary are currently unknown and unmapped:
             * keeppossession - I think this deals with keeping possession when abandoning territories but I am not sure.
             * keeppossessiononexpire - I don't know how this differs from keeppossession
             * numpercountry - I don't know how this differs from maxpercountry"""
-        self._numAttacks = rulesDictionary['numattacks']
-        self._numTransfers = rulesDictionary['numtransfers']
-        self._preTransfers = rulesDictionary['pretransfer']
-        self._damageDiceAttack = rulesDictionary['afdie']
-        self._damageDiceDefend = rulesDictionary['dfdie']
-        self._allowAbandon = rulesDictionary['allowabandon'] != 0
-        self._cardScale = rulesDictionary['cardscale'].split(",")
-        self._nextCardsWorth = rulesDictionary['nextcardsworth'].split(",")
-        self._numReserves = rulesDictionary['numreserves']
-        self._allowReturnToAttack = rulesDictionary['returntoattack'] != 0
-        self._allowReturnToPlacement = rulesDictionary['returntoplace'] != 0
-        self._maxArmiesPerCountry = rulesDictionary['maxpercountry']
-        self._fog = rulesDictionary['fog']
-        self._attackDieSides = rulesDictionary['adie']
-        self._defendDieSides = rulesDictionary['ddie']
-        self._isBlindAtOncePlay = rulesDictionary['baoplay'] != 0
-        self._isTeamGame = rulesDictionary['teamgame'] != 0
-        self._allowTeamTransfer = rulesDictionary['teamtransfer'] != 0
-        self._allowContinuousAttack = rulesDictionary['continuousattack'] != 0
-        self._bootTime = rulesDictionary['boottime']
-        self._isCardCapture = rulesDictionary['hascards'] != 0 #TODO: I am not positive that this is actually a setting for card capture. I need to play with it.
-        self._allowTeamPlaceUnits = rulesDictionary['teamplaceunits'] != 0
-        self._initialUnitPlacement = rulesDictionary['uplace'] #I think this has to do with the initial unit placement mechanism used.
-        self._cardSetsTraded = rulesDictionary['cardsetstraded']
+        self._num_attacks = rules_dictionary['numattacks']
+        self._num_transfers = rules_dictionary['numtransfers']
+        self._pre_transfers = rules_dictionary['pretransfer']
+        self._damage_dice_attack = rules_dictionary['afdie']
+        self._damage_dice_defend = rules_dictionary['dfdie']
+        self._allow_abandon = rules_dictionary['allowabandon'] != 0
+        self._card_scale = rules_dictionary['cardscale'].split(",")
+        self._next_cards_worth = rules_dictionary['nextcardsworth'].split(",")
+        self._num_reserves = rules_dictionary['numreserves']
+        self._allow_return_to_attack = rules_dictionary['returntoattack'] != 0
+        self._allow_return_to_placement = rules_dictionary['returntoplace'] != 0
+        self._max_armies_per_country = rules_dictionary['maxpercountry']
+        self._fog = rules_dictionary['fog']
+        self._attack_die_sides = rules_dictionary['adie']
+        self._defend_die_sides = rules_dictionary['ddie']
+        self._is_blind_at_once_play = rules_dictionary['baoplay'] != 0
+        self._is_team_game = rules_dictionary['teamgame'] != 0
+        self._allow_team_transfer = rules_dictionary['teamtransfer'] != 0
+        self._allow_continuous_attack = rules_dictionary['continuousattack'] != 0
+        self._boot_time = rules_dictionary['boottime']
+        self._is_card_capture = rules_dictionary['hascards'] != 0 #TODO: I am not positive that this is actually a setting for card capture. I need to play with it.
+        self._allow_team_place_units = rules_dictionary['teamplaceunits'] != 0
+        self._initial_unit_placement = rules_dictionary['uplace'] #I think this has to do with the initial unit placement mechanism used.
+        self._card_sets_traded = rules_dictionary['cardsetstraded']
         
     @property
-    def numAttacks(self):
+    def num_attacks(self):
         """The number of attacks that are allowed per turn.
         A value of -1 means an infinite number are allowed."""
-        return self._numAttacks
+        return self._num_attacks
     
     @property
-    def numTransfers(self):
+    def num_transfers(self):
         """The number of transfers that are allowed per turn."""
-        return self._numTransfers
+        return self._num_transfers
     
     @property
-    def preTransfers(self):
+    def pre_transfers(self):
         """Used in blind-at-once games. Pre-transfers are transfers before the attack phase."""
-        return self._preTransfers
+        return self._pre_transfers
     
     @property
-    def damageDiceAttack(self):
+    def damage_dice_attack(self):
         """Only used with damage dice. The attacker needs more than this value."""
-        return self._damageDiceAttack
+        return self._damage_dice_attack
     
     @property
-    def damageDiceDefend(self):
+    def damage_dice_defend(self):
         """Only used with damage dice. The defender needs more than this value."""
-        return self._damageDiceDefend
+        return self._damage_dice_defend
     
     @property
-    def allowAbandon(self):
+    def allow_abandon(self):
         """Whether players are allowed to abandon territories or not."""
-        return self._allowAbandon
+        return self._allow_abandon
     
     @property
-    def cardScale(self):
+    def card_scale(self):
         """How card sets scale when traded in."""
-        return self._cardScale
+        return self._card_scale
     
     @property
-    def nextCardsWorth(self):
+    def next_cards_worth(self):
         """What the next sets of cards are worth."""
-        return self._nextCardsWorth
+        return self._next_cards_worth
     
     @property
-    def numReserves(self):
+    def num_reserves(self):
         """The number of armies that are allowed to be stored in reserve."""
-        return self._numReserves
+        return self._num_reserves
     
     @property
-    def allowReturnToAttack(self):
+    def allow_return_to_attack(self):
         """Whether or not you can return to the attack phase from transfer in turn-based play."""
-        return self._allowReturnToAttack
+        return self._allow_return_to_attack
     
     @property
-    def allowReturnToPlacement(self):
+    def allow_return_to_placement(self):
         """Whether or not you can return to the unit placement phase from the attack phase in turn-based play."""
-        return self._allowReturnToPlacement
+        return self._allow_return_to_placement
     
     @property
-    def maxArmiesPerCountry(self):
+    def max_armies_per_country(self):
         """The maximum number of armies you can have in one country. Warfish considers 65535 to be unlimited."""
-        return self._maxArmiesPerCountry
+        return self._max_armies_per_country
     
     @property
     def fog(self):
@@ -120,59 +120,59 @@ class Rules:
         return self._fog
     
     @property
-    def attackDieSides(self):
+    def attack_die_sides(self):
         """The number of sides on the attack die."""
-        return self._attackDieSides
+        return self._attack_die_sides
     
     @property
-    def defendDieSides(self):
+    def defend_die_sides(self):
         """The number of sides on the defend die."""
-        return self._defendDieSides
+        return self._defend_die_sides
     
     @property
-    def isBlindAtOncePlay(self):
+    def is_blind_at_once_play(self):
         """Whether this game is blind-at-once play or not."""
-        return self._isBlindAtOncePlay
+        return self._is_blind_at_once_play
     
     @property
-    def isTeamGame(self):
+    def is_team_game(self):
         """Is this game a team game or not?"""
-        return self._isTeamGame
+        return self._is_team_game
     
     @property
-    def allowTeamTransfer(self):
+    def allow_team_transfer(self):
         """Whether you are allowed to transfer armies to team member territories or not"""
-        return self._allowTeamTransfer
+        return self._allow_team_transfer
     
     @property
-    def allowContinuousAttack(self):
+    def allow_continuous_attack(self):
         """Whether continuous attack is allowed or not. This is for games that limit the number of attacks per turn."""
-        return self._allowContinuousAttack
+        return self._allow_continuous_attack
     
     @property
-    def bootTime(self):
+    def boot_time(self):
         """The time in seconds required before you are allowed to boot a player."""
-        return self._bootTime
+        return self._boot_time
     
     @property
-    def isCardCapture(self):
+    def is_card_capture(self):
         """Card capture refers to whether you get an opponents cards after eliminating them."""
-        return self._isCardCapture
+        return self._is_card_capture
     
     @property
-    def allowTeamPlaceUnits(self):
+    def allow_team_place_units(self):
         """Whether you can place units on team member territories or not."""
-        return self._allowTeamPlaceUnits
+        return self._allow_team_place_units
     
     @property
-    def initialUnitPlacement(self):
+    def initial_unit_placement(self):
         """How units are initially place. The choices are turn based, automatic, and blind-at-once."""
-        return self._initialUnitPlacement
+        return self._initial_unit_placement
     
     @property
-    def cardSetsTraded(self):
+    def card_sets_traded(self):
         """How many card sets have been traded in so far."""
-        return self._cardSetsTraded
+        return self._card_sets_traded
      
 if __name__ == "__main__":
     import doctest
