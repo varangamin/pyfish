@@ -19,27 +19,35 @@
 
 import urllib.request
 import json
-from pyFish import Rules
-from pyFish import Map
-from pyFish import Game
-    
-def build_game_objects(dct):
-    if 'numattacks' in dct:
-        return Rules.Rules(dct)
-    if 'numterritories' in dct:
-        return Map.Map(dct['_content']['territory'])
-    return dct
+from pyFish import Rules, Map, Game, Player
 
-response = urllib.request.urlopen('http://216.169.106.90/war/services/rest?_method=warfish.tables.getDetails&gid=55808245&sections=board,rules,map,continents&_format=json')
-html = response.read()
-details = json.loads(bytes.decode(html))
+details_response = urllib.request.urlopen('http://216.169.106.90/war/services/rest?_method=warfish.tables.getDetails&gid=55808245&sections=board,rules,map,continents&_format=json')
+details = json.loads(bytes.decode(details_response.read()))
+
+state_response = urllib.request.urlopen('http://216.169.106.90/war/services/rest?_method=warfish.tables.getState&gid=55808245&scetions=cards,board,details,players,possibleactions&_format=json')
+state = json.loads(bytes.decode(state_response.read()))
+print(state)
 
 map = Map.Map(details['_content']['map']['_content']['territory'], details['_content']['board']['_content']['border'], details['_content']['continents']['_content']['continent'])
-rules = Rules.Rules(details['_content']['rules']) 
+rules = Rules.Rules(details['_content']['rules'])
+players = {player_info['id'] : Player.Player(player_info) for player_info in state['_content']['players']['_content']['player']} 
 
-game = Game.Game(55808245, map, [], rules)
-print(game.map.territories)
-for continent in game.map.continents:
+game = Game.Game(55808245, map, players, rules)
+print("Territories")
+for continent_id, continent in game.map.continents.items():
     print(continent.name)
-    for territory in continent.territories:
-        print(" " * 5 + territory.name)
+    for key, value in continent.territories.items():
+        print(" " * 5 + key + ": " + value.name)        
+
+print("Neighbors")
+for territory_id, territory in game.map.territories.items():
+    print(territory.name + " can attack")
+    for attackable_neighbor_id, attackable_neighbor in territory.attackable_neighbors.items():
+        print(" " * 5 + attackable_neighbor_id + ": " + attackable_neighbor.name)
+    print(territory.name + " can be attacked by")
+    for defendable_neighbor_id, defendable_neighbor in territory.defendable_neighbors.items():
+        print(" " * 5 + defendable_neighbor_id + ": " + defendable_neighbor.name)
+
+print("Players")        
+for player_id, player in game.players.items():
+    print("id: {0}, name: {1}".format(player.id, player.name))

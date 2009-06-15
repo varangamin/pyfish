@@ -20,17 +20,20 @@ and armies."""
 
 class Territory:
     
-    def __init__(self, name, neighbors, owner, armies):
+    def __init__(self, name, attackable_neighbors, defendable_neighbors, owner, armies):
         assert isinstance(name, str)
         self._name = name
         self._owner = owner
-        self._neighbors = neighbors
+        self._attackable_neighbors = attackable_neighbors
+        self._defendable_neighbors = defendable_neighbors
         self._armies = armies
 
-    def __init__(self, territoryDictionary):
-        self._name = territoryDictionary['name']
-        self._maxUnits = territoryDictionary['maxunits']
-        self._id = territoryDictionary['id']
+    def __init__(self, territory_dictionary):
+        self._name = territory_dictionary['name']
+        self._max_units = territory_dictionary['maxunits']
+        self._id = territory_dictionary['id']
+        self._attackable_neighbors = {}
+        self._defendable_neighbors = {}
         
     @property
     def name(self):
@@ -38,9 +41,16 @@ class Territory:
         return self._name
     
     @property
-    def neighbors(self):
-        """Each territory has a tuple of neighbor territories."""
-        return self._neighbors
+    def attackable_neighbors(self):
+        """Each territory has a dictionary of neighbor territories that it can attack.
+        The key is the territories id."""
+        return self._attackable_neighbors
+    
+    @property
+    def defendable_neighbors(self):
+        """Each territory has a dictionary of neighbor territories that can attack it.
+        The key is the territories id."""
+        return self._defendable_neighbors
     
     @property
     def owner(self):
@@ -61,9 +71,9 @@ class Territory:
         self._armies = armies
         
     @property
-    def maxUnits(self):
+    def max_units(self):
         """The max number of units allowed on the territory."""
-        return self._maxUnits
+        return self._max_units
     
     @property
     def id(self):

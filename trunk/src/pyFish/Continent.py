@@ -25,15 +25,15 @@ class Continent:
         assert bonus > 0, "The continent bonus must be greater than 0."
         self._bonus = bonus
     
-    def __init__(self, continentDictionary, territories):
-        self._name = continentDictionary['name']
-        self._id = continentDictionary['id']
-        self._bonus = continentDictionary['units']
-        self._territories = []
-        for id in continentDictionary['cids'].split(','):
-            for territory in territories:
-                if territory.id == id:
-                    self._territories.append(territory)
+    def __init__(self, continent_dictionary, territories):
+        self._name = continent_dictionary['name']
+        self._id = continent_dictionary['id']
+        self._bonus = continent_dictionary['units']
+        self._territories = {}
+        for id in continent_dictionary['cids'].split(','):
+            for key, value in territories.items():
+                if key == id:
+                    self._territories[key] = value
         
     @property
     def name(self):
