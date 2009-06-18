@@ -19,8 +19,31 @@
 
 class Move:
     
-    def __init__(self, index=0):
-        self._index = index
+    def __init__(self, action, arguments):
+        """Creates a Move.
+        
+        >>> move = Move('join', {'colorid': '1', 'name': 'The Curmudgeon'})
+        >>> print(move)
+        &action=join&colorid=1&name=The Curmudgeon
+        """
+        self._action = action
+        self._arguments = arguments
+    
+    def __str__(self):
+        arguments_string = ""
+        for key, value in self._arguments.items():
+            arguments_string += "&{0}={1}".format(key, value) 
+        return "&action=" + self._action + arguments_string
+    
+    @property
+    def action(self):
+        """The action for this move."""
+        return self._action
+    
+    @property
+    def arguments(self):
+        """A dictionary of arguments for the move. Each type of move has different arguments."""
+        return self._arguments
         
 if __name__ == "__main__":
     import doctest
