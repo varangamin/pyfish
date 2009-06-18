@@ -23,7 +23,7 @@ from pyFish import Continent
 
 class Map:
     
-    def __init__(self, map_dictionary, board_dictionary, continents_dictionary):
+    def __init__(self, map_dictionary, board_dictionary, continents_dictionary, board_state_dictionary, players_dictionary):
         self._territories = {item['id'] : Territory.Territory(item) for item in map_dictionary}
         self._continents = {item['id'] : Continent.Continent(item, self._territories) for item in continents_dictionary}
         #Each board element has two ids. a is the attacking country and b is the defending country.
@@ -32,6 +32,16 @@ class Map:
             territory_b = self._territories[item['b']]
             territory_a.attackable_neighbors[territory_b.id] = territory_b
             territory_b.defendable_neighbors[territory_a.id] = territory_a
+        #Assign each territory an owner.
+        for item in board_state_dictionary:
+            #A playerid of -1 means the territory is neutral
+            territory = self._territories[item['id']]
+            if item['playerid'] != '-1':
+                player = players_dictionary[item['playerid']]
+                territory.owner = player
+                player.territories[territory.id] = territory
+            territory.armies = item['units']
+            
         
     @property
     def continents(self):

@@ -19,12 +19,6 @@
 
 class Continent:
     
-    def __init__(self, name, territories, bonus):
-        self._name = name
-        self._territories = territories
-        assert bonus > 0, "The continent bonus must be greater than 0."
-        self._bonus = bonus
-    
     def __init__(self, continent_dictionary, territories):
         self._name = continent_dictionary['name']
         self._id = continent_dictionary['id']

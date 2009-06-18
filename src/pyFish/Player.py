@@ -18,12 +18,6 @@
 """Represents a player in a game of Warfish."""
 
 class Player:
-    
-    def __init__(self, name):
-        assert isinstance(name, str)
-        self._name = name
-        self._cards = ()
-        self._territories = {}
         
     def __init__(self, player_dictionary):
         self._name = player_dictionary['name']

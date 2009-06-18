@@ -19,19 +19,12 @@
 and armies."""
 
 class Territory:
-    
-    def __init__(self, name, attackable_neighbors, defendable_neighbors, owner, armies):
-        assert isinstance(name, str)
-        self._name = name
-        self._owner = owner
-        self._attackable_neighbors = attackable_neighbors
-        self._defendable_neighbors = defendable_neighbors
-        self._armies = armies
 
     def __init__(self, territory_dictionary):
         self._name = territory_dictionary['name']
         self._max_units = territory_dictionary['maxunits']
         self._id = territory_dictionary['id']
+        self._owner = None
         self._attackable_neighbors = {}
         self._defendable_neighbors = {}
         

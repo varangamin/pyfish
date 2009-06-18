@@ -28,9 +28,13 @@ state_response = urllib.request.urlopen('http://216.169.106.90/war/services/rest
 state = json.loads(bytes.decode(state_response.read()))
 print(state)
 
-map = Map.Map(details['_content']['map']['_content']['territory'], details['_content']['board']['_content']['border'], details['_content']['continents']['_content']['continent'])
-rules = Rules.Rules(details['_content']['rules'])
-players = {player_info['id'] : Player.Player(player_info) for player_info in state['_content']['players']['_content']['player']} 
+players = {player_info['id'] : Player.Player(player_info) for player_info in state['_content']['players']['_content']['player']}
+map = Map.Map(details['_content']['map']['_content']['territory'], 
+              details['_content']['board']['_content']['border'],
+              details['_content']['continents']['_content']['continent'],
+              state['_content']['board']['_content']['area'],
+              players)
+rules = Rules.Rules(details['_content']['rules']) 
 
 game = Game.Game(55808245, map, players, rules)
 print("Territories")
@@ -41,12 +45,13 @@ for continent_id, continent in game.map.continents.items():
 
 print("Neighbors")
 for territory_id, territory in game.map.territories.items():
-    print(territory.name + " can attack")
+    print("{0} has {1} armies and is owned by {2}.".format(territory.name, territory.armies, territory.owner.name if territory.owner != None else "Neutral"))
+    print(" " * 4 + territory.name + " can attack")
     for attackable_neighbor_id, attackable_neighbor in territory.attackable_neighbors.items():
-        print(" " * 5 + attackable_neighbor_id + ": " + attackable_neighbor.name)
-    print(territory.name + " can be attacked by")
+        print(" " * 8 + attackable_neighbor_id + ": " + attackable_neighbor.name)
+    print(" " * 4 + territory.name + " can be attacked by")
     for defendable_neighbor_id, defendable_neighbor in territory.defendable_neighbors.items():
-        print(" " * 5 + defendable_neighbor_id + ": " + defendable_neighbor.name)
+        print(" " * 8 + defendable_neighbor_id + ": " + defendable_neighbor.name)
 
 print("Players")        
 for player_id, player in game.players.items():
