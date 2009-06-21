@@ -15,30 +15,26 @@
 #You should have received a copy of the GNU General Public License
 #along with pyFish.  If not, see <http://www.gnu.org/licenses/>.
 
-"""A game of Warfish is represented by a series of moves."""
+"""A game of Warfish is represented by a series of moves. This abstract base class
+provides a simple interface for executing specific types of moves."""
 
-class Move:
+import abc
+
+class Move(metaclass=abc.ABCMeta):
     
-    def __init__(self, action, arguments):
-        """Creates a Move.
-        
-        >>> move = Move('join', {'colorid': '1', 'name': 'The Curmudgeon'})
-        >>> print(move)
-        &action=join&colorid=1&name=The Curmudgeon
-        """
-        self._action = action
+    @abc.abstractmethod
+    def __init__(self, arguments):
         self._arguments = arguments
     
-    def __str__(self):
-        arguments_string = ""
-        for key, value in self._arguments.items():
-            arguments_string += "&{0}={1}".format(key, value) 
-        return "&action=" + self._action + arguments_string
-    
-    @property
-    def action(self):
+    @abc.abstractproperty
+    def action_id(self):
         """The action for this move."""
-        return self._action
+        raise NotImplementedError()
+    
+    @abc.abstractproperty
+    def execute(self):
+        """Send a doMove request to Warfish."""
+        raise NotImplementedError()
     
     @property
     def arguments(self):

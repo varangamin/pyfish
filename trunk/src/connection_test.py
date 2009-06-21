@@ -21,12 +21,19 @@ import urllib.request
 import json
 from pyFish import Rules, Map, Game, Player
 
-details_response = urllib.request.urlopen('http://216.169.106.90/war/services/rest?_method=warfish.tables.getDetails&gid=55808245&sections=board,rules,map,continents&_format=json')
+WARFISH_URL = 'http://216.169.106.90/'
+GAME_ID = '55808245'
+
+details_response = urllib.request.urlopen('{0}war/services/rest?_method=warfish.tables.getDetails&gid={1}&sections=board,rules,map,continents&_format=json'.format(WARFISH_URL, GAME_ID))
 details = json.loads(bytes.decode(details_response.read()))
 
-state_response = urllib.request.urlopen('http://216.169.106.90/war/services/rest?_method=warfish.tables.getState&gid=55808245&scetions=cards,board,details,players,possibleactions&_format=json')
+state_response = urllib.request.urlopen('{0}war/services/rest?_method=warfish.tables.getState&gid={1}&sections=cards,board,details,players,possibleactions&_format=json'.format(WARFISH_URL, GAME_ID))
 state = json.loads(bytes.decode(state_response.read()))
 print(state)
+
+history_response = urllib.request.urlopen('{0}war/services/rest?_method=warfish.tables.getHistory&gid={1}&start=-1&num=1500&_format=json'.format(WARFISH_URL, GAME_ID))
+history = json.loads(bytes.decode(history_response.read()))
+print(history)
 
 players = {player_info['id'] : Player.Player(player_info) for player_info in state['_content']['players']['_content']['player']}
 map = Map.Map(details['_content']['map']['_content']['territory'], 
@@ -34,7 +41,7 @@ map = Map.Map(details['_content']['map']['_content']['territory'],
               details['_content']['continents']['_content']['continent'],
               state['_content']['board']['_content']['area'],
               players)
-rules = Rules.Rules(details['_content']['rules']) 
+rules = Rules.Rules(details['_content']['rules'])  
 
 game = Game.Game(55808245, map, players, rules)
 print("Territories")
