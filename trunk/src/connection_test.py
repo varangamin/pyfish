@@ -20,6 +20,7 @@
 import urllib.request
 import json
 from pyFish import Rules, Map, Game, Player
+from pyFish.Moves import *
 
 WARFISH_URL = 'http://216.169.106.90/'
 GAME_ID = '55808245'
@@ -42,6 +43,7 @@ map = Map.Map(details['_content']['map']['_content']['territory'],
               state['_content']['board']['_content']['area'],
               players)
 rules = Rules.Rules(details['_content']['rules'])  
+history = MoveResultProcessor.process_history(history['_content']['movelog']['_content']['m'])
 
 game = Game.Game(55808245, map, players, rules)
 print("Territories")
@@ -63,3 +65,7 @@ for territory_id, territory in game.map.territories.items():
 print("Players")        
 for player_id, player in game.players.items():
     print("id: {0}, name: {1}".format(player.id, player.name))
+    
+print("History")
+for move_result_id, move_result in history.items():
+    print("id: {0}, timestamp: {1}, player_id: {2}, result_id: {3}".format(move_result_id, move_result.unix_timestamp, move_result.player_id, move_result.result_id)) 

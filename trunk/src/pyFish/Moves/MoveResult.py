@@ -46,7 +46,7 @@ class MoveResult(metaclass=abc.ABCMeta):
     @property
     def player_id(self):
         """The id of the player that made the move."""
-        return self._player_id
+        return self._player_id            
         
 if __name__ == "__main__":
     import doctest

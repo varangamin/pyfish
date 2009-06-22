@@ -17,7 +17,7 @@
 
 """A concrete implementation of MoveResult for the results from an attack."""
 
-import MoveResult
+from pyFish.Moves import MoveResult
 
 class AttackMoveResult(MoveResult.MoveResult):
 
