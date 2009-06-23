@@ -21,58 +21,13 @@ and armies."""
 class Territory:
 
     def __init__(self, territory_dictionary):
-        self._name = territory_dictionary['name']
-        self._max_units = territory_dictionary['maxunits']
-        self._id = territory_dictionary['id']
-        self._owner = None
-        self._attackable_neighbors = {}
-        self._defendable_neighbors = {}
-        
-    @property
-    def name(self):
-        """The name of the territory."""
-        return self._name
-    
-    @property
-    def attackable_neighbors(self):
-        """Each territory has a dictionary of neighbor territories that it can attack.
-        The key is the territories id."""
-        return self._attackable_neighbors
-    
-    @property
-    def defendable_neighbors(self):
-        """Each territory has a dictionary of neighbor territories that can attack it.
-        The key is the territories id."""
-        return self._defendable_neighbors
-    
-    @property
-    def owner(self):
-        """The owner of the territory."""
-        return self._owner
-    
-    @owner.setter
-    def owner(self, owner):
-        self._owner = owner
-    
-    @property
-    def armies(self):
-        """The number of armies on a territory."""
-        return self._armies
-    
-    @armies.setter
-    def armies(self, armies):
-        self._armies = armies
-        
-    @property
-    def max_units(self):
-        """The max number of units allowed on the territory."""
-        return self._max_units
-    
-    @property
-    def id(self):
-        """The id Warfish gives the territory."""
-        return self._id
-        
+        self.name = territory_dictionary['name']
+        self.max_units = territory_dictionary['maxunits']
+        self.id = territory_dictionary['id']
+        self.owner = None
+        self.attackable_neighbors = {}
+        self.defendable_neighbors = {}
+            
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

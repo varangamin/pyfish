@@ -22,10 +22,10 @@ import Move
 class AttackMove(Move.Move):
     
     def __init__(self, id, from_territory, to_territory, number_of_units, is_continuous):
-        self._from_territory = from_territory
-        self._to_territory = to_territory
-        self._number_of_units = number_of_units
-        self._is_continous = is_continuous
+        self.from_territory = from_territory
+        self.to_territory = to_territory
+        self.number_of_units = number_of_units
+        self.is_continous = is_continuous
         self.arguments['fromcid'] = from_territory.id
         self.arguments['tocid'] = to_territory.id
         self.arguments['numunits'] = str(number_of_units)
@@ -39,26 +39,6 @@ class AttackMove(Move.Move):
     @property
     def execute(self):
         raise NotImplementedError()
-    
-    @property
-    def from_territory(self):
-        """The territory the attack is coming from."""
-        return self._from_territory
-    
-    @property
-    def to_territory(self):
-        """The territory being attacked"""
-        return self._to_territory
-    
-    @property
-    def number_of_units(self):
-        """Number of units to attack with. 1-3 for when is_continuous is false or 3+ for when true."""
-        return self._number_of_units
-    
-    @property
-    def is_continuous(self):
-        """Is the attack continous? A continuous attack continues until the territory is captured or the specified number of units are lost."""
-        return self._is_continous
 
 if __name__ == "__main__":
     import doctest

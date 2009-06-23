@@ -24,29 +24,14 @@ class MoveResult(metaclass=abc.ABCMeta):
     
     @abc.abstractmethod
     def __init__(self, id, unix_timestamp, player_id):
-        self._id = id
-        self._unix_timestamp = unix_timestamp
-        self._player_id = player_id
-    
-    @property
-    def id(self):
-        """The id of the move."""
-        return self._id
+        self.id = id
+        self.unix_timestamp = unix_timestamp
+        self.player_id = player_id
     
     @abc.abstractproperty
     def result_id(self):
         """The id of the move as it appears when getting the history."""
-        raise NotImplementedError()
-    
-    @property
-    def unix_timestamp(self):
-        """The Unix timestamp for when the move was executed."""
-        return self._unix_timestamp
-    
-    @property
-    def player_id(self):
-        """The id of the player that made the move."""
-        return self._player_id            
+        raise NotImplementedError()            
         
 if __name__ == "__main__":
     import doctest
