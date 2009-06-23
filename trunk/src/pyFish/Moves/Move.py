@@ -24,7 +24,7 @@ class Move(metaclass=abc.ABCMeta):
     
     @abc.abstractmethod
     def __init__(self, arguments):
-        self._arguments = arguments
+        self.arguments = arguments
     
     @abc.abstractproperty
     def action_id(self):
@@ -35,11 +35,6 @@ class Move(metaclass=abc.ABCMeta):
     def execute(self):
         """Send a doMove request to Warfish."""
         raise NotImplementedError()
-    
-    @property
-    def arguments(self):
-        """A dictionary of arguments for the move. Each type of move has different arguments."""
-        return self._arguments
         
 if __name__ == "__main__":
     import doctest

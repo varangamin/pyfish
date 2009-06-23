@@ -24,34 +24,23 @@ from pyFish import Continent
 class Map:
     
     def __init__(self, map_dictionary, board_dictionary, continents_dictionary, board_state_dictionary, players_dictionary):
-        self._territories = {item['id'] : Territory.Territory(item) for item in map_dictionary}
-        self._continents = {item['id'] : Continent.Continent(item, self._territories) for item in continents_dictionary}
+        self.territories = {item['id'] : Territory.Territory(item) for item in map_dictionary}
+        self.continents = {item['id'] : Continent.Continent(item, self.territories) for item in continents_dictionary}
         #Each board element has two ids. a is the attacking country and b is the defending country.
         for item in board_dictionary:
-            territory_a = self._territories[item['a']]
-            territory_b = self._territories[item['b']]
+            territory_a = self.territories[item['a']]
+            territory_b = self.territories[item['b']]
             territory_a.attackable_neighbors[territory_b.id] = territory_b
             territory_b.defendable_neighbors[territory_a.id] = territory_a
         #Assign each territory an owner.
         for item in board_state_dictionary:
             #A playerid of -1 means the territory is neutral
-            territory = self._territories[item['id']]
+            territory = self.territories[item['id']]
             if item['playerid'] != '-1':
                 player = players_dictionary[item['playerid']]
                 territory.owner = player
                 player.territories[territory.id] = territory
             territory.armies = item['units']
-            
-        
-    @property
-    def continents(self):
-        """A tuple of continents."""
-        return self._continents
-    
-    @property
-    def territories(self):
-        """All of the territories on the map."""
-        return self._territories
     
 if __name__ == "__main__":
     import doctest

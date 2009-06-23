@@ -22,25 +22,10 @@ class Game:
     
     def __init__(self, id, map, players, rules):
         """Initializes a game with the given map and players."""
-        self._id = id
-        self._map = map
-        self._players = players
-        self._rules = rules
-        
-    @property
-    def map(self):
-        """The map the game is being played on."""
-        return self._map
-    
-    @property
-    def players(self):
-        """The players in the game. This includes both active and defeated players."""
-        return self._players
-    
-    @property
-    def rules(self):
-        """The rules for the game."""
-        return self._rules
+        self.id = id
+        self.map = map
+        self.players = players
+        self.rules = rules
     
 if __name__ == "__main__":
     import doctest
