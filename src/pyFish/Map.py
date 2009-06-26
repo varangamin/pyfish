@@ -21,6 +21,8 @@ import json
 from pyFish import Territory
 from pyFish import Continent
 
+__all__ = ['Map']
+
 class Map:
     
     def __init__(self, map_dictionary, board_dictionary, continents_dictionary, board_state_dictionary, players_dictionary):
