@@ -1,1 +1,1 @@
-__all__ = ['AttackMoveResult', 'MoveResult', 'MoveResultProcessor']
+__all__ = ['Moves', 'MoveResults']

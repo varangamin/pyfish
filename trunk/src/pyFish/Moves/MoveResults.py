@@ -15,11 +15,25 @@
 #You should have received a copy of the GNU General Public License
 #along with pyFish.  If not, see <http://www.gnu.org/licenses/>.
 
-"""A concrete implementation of MoveResult for the results from an attack."""
+"""A game of Warfish is represented by a series of moves. This abstract base class
+provides a simple interface for the results of moves."""
 
-from pyFish.Moves import MoveResult
+import abc
 
-class AttackMoveResult(MoveResult.MoveResult):
+class MoveResult(metaclass=abc.ABCMeta):
+    
+    @abc.abstractmethod
+    def __init__(self, id, unix_timestamp, player_id):
+        self.id = id
+        self.unix_timestamp = unix_timestamp
+        self.player_id = player_id
+    
+    @abc.abstractproperty
+    def result_id(self):
+        """The id of the move as it appears when getting the history."""
+        raise NotImplementedError()
+    
+class AttackMoveResult(MoveResult):
 
     def __init__(self, move_result_dictionary):
         self.border_mods = move_result_dictionary['m'] #m stands for border_mod, but I have no idea what that means
@@ -35,7 +49,20 @@ class AttackMoveResult(MoveResult.MoveResult):
     @property
     def result_id(self):
         return 'a'
+            
+constructors = dict(a=AttackMoveResult)
 
+def process_history(move_dictionary):
+    """Process a dictionary of moves returned by making the getHistory Warfish API call."""
+    history = {}
+    for item in move_dictionary:
+        try:
+            history[item['id']] = constructors[item['a']](item)
+        except KeyError:
+            print('{0} is not implemented yet. {1}'.format(item['a'], item))
+    return history
+
+        
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
