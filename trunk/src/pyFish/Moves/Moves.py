@@ -32,8 +32,8 @@ class Move(metaclass=abc.ABCMeta):
         raise NotImplementedError()
     
     def to_query_string(self):
-        """Create a query string for the move."""
-        query_string = ''
+        """Create a query string containing the name of the move and its arguments."""
+        query_string = '&{0}={1}'.format('action', self.action_id)
         for key, value in self.arguments.items():
             query_string += "&{0}={1}".format(key, value)
         return query_string
