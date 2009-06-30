@@ -86,7 +86,7 @@ class Map:
                 player = players_dictionary[item['playerid']]
                 territory.owner = player
                 player.territories[territory.id] = territory
-            territory.armies = item['units']
+            territory.armies = int(item['units'])
 
 """A continent represents a collection of territories that give a bonus when controlled by a single player."""
 class Continent:
@@ -155,11 +155,12 @@ class Territory:
 
     def __init__(self, territory_dictionary):
         self.name = territory_dictionary['name']
-        self.max_units = territory_dictionary['maxunits']
+        self.max_units = territory_dictionary['maxunits'] 
         self.id = territory_dictionary['id']
         self.owner = None
         self.attackable_neighbors = {}
         self.defendable_neighbors = {}
+        self.armies = 0
 
 """A turn is made up of a collection of moves."""
 class Turn:
