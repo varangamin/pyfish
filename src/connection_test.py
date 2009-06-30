@@ -17,36 +17,13 @@
 
 """This file is for me to experiment with different json processing methods in Python."""
 
-import urllib.request
-import json
-from pyFish import Rules, Map, Game, Player
-from pyFish.Map import *
+from pyFish import Core
 from pyFish.Moves import *
 
-WARFISH_URL = 'http://216.169.106.90/'
 GAME_ID = '55808245'
 
-details_response = urllib.request.urlopen('{0}war/services/rest?_method=warfish.tables.getDetails&gid={1}&sections=board,rules,map,continents&_format=json'.format(WARFISH_URL, GAME_ID))
-details = json.loads(bytes.decode(details_response.read()))
+game = Core.initialize_game(GAME_ID)
 
-state_response = urllib.request.urlopen('{0}war/services/rest?_method=warfish.tables.getState&gid={1}&sections=cards,board,details,players,possibleactions&_format=json'.format(WARFISH_URL, GAME_ID))
-state = json.loads(bytes.decode(state_response.read()))
-print(state)
-
-history_response = urllib.request.urlopen('{0}war/services/rest?_method=warfish.tables.getHistory&gid={1}&start=-1&num=1500&_format=json'.format(WARFISH_URL, GAME_ID))
-history = json.loads(bytes.decode(history_response.read()))
-print(history)
-
-players = {player_info['id'] : Player.Player(player_info) for player_info in state['_content']['players']['_content']['player']}
-map = Map(details['_content']['map']['_content']['territory'], 
-              details['_content']['board']['_content']['border'],
-              details['_content']['continents']['_content']['continent'],
-              state['_content']['board']['_content']['area'],
-              players)
-rules = Rules.Rules(details['_content']['rules'])  
-history = MoveResults.process_history(history['_content']['movelog']['_content']['m'])
-
-game = Game.Game(55808245, map, players, rules)
 print("Territories")
 for continent_id, continent in game.map.continents.items():
     print(continent.name)
@@ -68,8 +45,8 @@ for player_id, player in game.players.items():
     print("id: {0}, name: {1}".format(player.id, player.name))
     
 print("History")
-for move_result_id, move_result in history.items():
+for move_result_id, move_result in game.history.items():
     print("id: {0}, timestamp: {1}, player_id: {2}, result_id: {3}".format(move_result_id, move_result.unix_timestamp, move_result.player_id, move_result.result_id))
     
 attack_move = Moves.AttackMove(game.map.territories['1'], game.map.territories['2'], 3, False)
-print(attack_move.to_query_string()) 
+print(game.execute_move(attack_move)) 
