@@ -27,7 +27,7 @@ WARFISH_METHODS = {'details': 'warfish.tables.getDetails',
 NONE, LIGHT, MODERATE, FOGGY, VERY, EXTREME = range(6) 
 TURN_BASED, AUTO, BLIND_AT_ONCE = range(3)
 
-def initialize_game(game_id):
+def initialize_game(game_id, cookie):
     """Pulls down all of the game information from Warfish and creates a Game object."""
     details_response = urllib.request.urlopen('{0}?_method={1}&gid={2}&sections=board,rules,map,continents&_format=json'.format(WARFISH_URL, WARFISH_METHODS['details'], game_id))
     details = json.loads(bytes.decode(details_response.read()))
@@ -48,22 +48,26 @@ def initialize_game(game_id):
     rules = Rules(details['_content']['rules'])  
     history = MoveResults.process_history(history['_content']['movelog']['_content']['m'])
     
-    return Game(game_id, map, players, rules, history)
+    return Game(game_id, map, players, rules, history, cookie)
 
 """Represents a Warfish game. This is currently limited to only supporting 
 a standard game of Risk. While Warfish allows customization of rules this is not currently supported."""
 class Game:
     
-    def __init__(self, id, map, players, rules, history):
+    def __init__(self, id, map, players, rules, history, cookie):
         """Initializes a game with the given map and players."""
         self.id = id
         self.map = map
         self.players = players
         self.rules = rules
         self.history = history
+        self.cookie = cookie
     
     def execute_move(self, move):
-        move_response = urllib.request.urlopen('{0}?_method={1}&gid={2}{3}'.format(WARFISH_URL, WARFISH_METHODS['doMove'], id, move.to_query_string()))
+        complete_url = '{0}?_method={1}&gid={2}{3}'.format(WARFISH_URL, WARFISH_METHODS['doMove'], self.id, move.to_query_string())
+        request = urllib.request.Request(complete_url, None, {'Cookie': self.cookie} )
+        print(request.get_header('Cookie'))
+        move_response = urllib.request.urlopen(request)
         return bytes.decode(move_response.read())
 
 """A map in Warfish is made up of territories, which can be organized into continents."""

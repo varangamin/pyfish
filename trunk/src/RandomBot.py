@@ -18,13 +18,14 @@
 from pyFish import Core
 from pyFish.Moves import *
 
-GAME_ID = '55808245'
+GAME_ID = '46153949'
 PLAYER_NAME = 'The Curmudgeon'
+COOKIE = 'SESSID=21548ed928da03bb61bade292db94948; LAST=829925F678A3F7AB3A03F11EC9BCBB6800340380D4A4'
 
 class RandomBot:
     
-    def __init__(self, game_id, player_name):
-        self.game = Core.initialize_game(game_id)
+    def __init__(self, game_id, player_name, cookie):
+        self.game = Core.initialize_game(game_id, cookie)
         self.player = None
         for player_id, player in self.game.players.items():
             if(player.name == player_name):
@@ -35,7 +36,7 @@ class RandomBot:
         #Get every attackable territory.
         can_attack_from = {}
         for territory in self.player.territories.values():
-            if territory.armies > 1:
+            if territory.armies >= 4:
                 for attackable_neighbor in territory.attackable_neighbors.values():
                     if attackable_neighbor.owner != self.player:
                         if territory not in can_attack_from:
@@ -49,5 +50,5 @@ class RandomBot:
                 attack_move = Moves.AttackMove(territory, neighbor, territory.armies-1, True)
                 print(self.game.execute_move(attack_move))
             
-bot = RandomBot(GAME_ID, PLAYER_NAME)
+bot = RandomBot(GAME_ID, PLAYER_NAME, COOKIE)
 bot.take_turn()
