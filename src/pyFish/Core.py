@@ -64,7 +64,7 @@ class Game:
         self.cookie = cookie
     
     def execute_move(self, move):
-        complete_url = '{0}?_method={1}&gid={2}{3}'.format(WARFISH_URL, WARFISH_METHODS['doMove'], self.id, move.to_query_string())
+        complete_url = '{0}?_method={1}&gid={2}{3}&_format=json'.format(WARFISH_URL, WARFISH_METHODS['doMove'], self.id, move.to_query_string())
         request = urllib.request.Request(complete_url, None, {'Cookie': self.cookie} )
         print(request.get_header('Cookie'))
         move_response = urllib.request.urlopen(request)
