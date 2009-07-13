@@ -18,7 +18,7 @@
 from pyFish import Core
 from pyFish.Moves import *
 
-GAME_ID = '46153949'
+GAME_ID = '53420604'
 PLAYER_NAME = 'The Curmudgeon'
 COOKIE = 'SESSID=21548ed928da03bb61bade292db94948; LAST=829925F678A3F7AB3A03F11EC9BCBB6800340380D4A4'
 
@@ -42,13 +42,10 @@ class RandomBot:
                         if territory not in can_attack_from:
                             can_attack_from[territory] = []
                         can_attack_from[territory].append(attackable_neighbor)
-        print(len(can_attack_from))
+
         for territory, attackable_neighbors in can_attack_from.items():
-            print(territory.name)
             for neighbor in attackable_neighbors:
-                print(" "*5 + neighbor.name)
                 attack_move = Moves.AttackMove(territory, neighbor, territory.armies-1, True)
-                print(self.game.execute_move(attack_move))
             
 bot = RandomBot(GAME_ID, PLAYER_NAME, COOKIE)
 bot.take_turn()

@@ -19,7 +19,8 @@ import json
 import urllib.request
 from pyFish.Moves import *
 
-WARFISH_URL = 'http://216.169.106.90/war/services/rest'
+#WARFISH_URL = 'http://216.169.106.90/war/services/rest'
+WARFISH_URL = 'http://warfish.net/war/services/rest'
 WARFISH_METHODS = {'details': 'warfish.tables.getDetails',
                    'state': 'warfish.tables.getState',
                    'history': 'warfish.tables.getHistory',
@@ -32,7 +33,8 @@ def initialize_game(game_id, cookie):
     details_response = urllib.request.urlopen('{0}?_method={1}&gid={2}&sections=board,rules,map,continents&_format=json'.format(WARFISH_URL, WARFISH_METHODS['details'], game_id))
     details = json.loads(bytes.decode(details_response.read()))
     
-    state_response = urllib.request.urlopen('{0}?_method={1}&gid={2}&sections=cards,board,details,players&_format=json'.format(WARFISH_URL, WARFISH_METHODS['state'], game_id))
+    print('{0}?_method={1}&gid={2}&sections=board,players,possibleactions&_format=json'.format(WARFISH_URL, WARFISH_METHODS['state'], game_id))
+    state_response = urllib.request.urlopen('{0}?_method={1}&gid={2}&sections=board,players,possibleactions&_format=json'.format(WARFISH_URL, WARFISH_METHODS['state'], game_id))
     state = json.loads(bytes.decode(state_response.read()))
     
     #TODO: Right now this assumes their are no more than 1500 moves. This is incorrect and needs fixed at some point.
@@ -46,7 +48,10 @@ def initialize_game(game_id, cookie):
               state['_content']['board']['_content']['area'],
               players)
     rules = Rules(details['_content']['rules'])  
-    history = MoveResults.process_history(history['_content']['movelog']['_content']['m'])
+    history = History.process_history(history['_content']['movelog']['_content']['m'])
+    possible_actions = []
+    for action in state['_content']['possibleactions']['_content']['action']:
+        possible_actions.append(action.value)
     
     return Game(game_id, map, players, rules, history, cookie)
 
@@ -54,7 +59,7 @@ def initialize_game(game_id, cookie):
 a standard game of Risk. While Warfish allows customization of rules this is not currently supported."""
 class Game:
     
-    def __init__(self, id, map, players, rules, history, cookie):
+    def __init__(self, id, map, players, rules, history, cookie, possible_actions):
         """Initializes a game with the given map and players."""
         self.id = id
         self.map = map
@@ -62,13 +67,14 @@ class Game:
         self.rules = rules
         self.history = history
         self.cookie = cookie
+        self.possible_actions = possible_actions
     
     def execute_move(self, move):
         complete_url = '{0}?_method={1}&gid={2}{3}&_format=json'.format(WARFISH_URL, WARFISH_METHODS['doMove'], self.id, move.to_query_string())
         request = urllib.request.Request(complete_url, None, {'Cookie': self.cookie} )
-        print(request.get_header('Cookie'))
         move_response = urllib.request.urlopen(request)
-        return bytes.decode(move_response.read())
+        json = json.loads(bytes.decode(move_response.read()))
+        return MoveResults.process_move_result(json, move)
 
 """A map in Warfish is made up of territories, which can be organized into continents."""
 class Map:
@@ -153,8 +159,7 @@ class Rules:
         self.initial_unit_placement = rules_dictionary['uplace'] #I think this has to do with the initial unit placement mechanism used.
         self.card_sets_traded = rules_dictionary['cardsetstraded']
 
-"""A map is made up of many territories, each of which must have an owner
-and armies."""
+"""A map is made up of many territories, each of which must have an owner and armies."""
 class Territory:
 
     def __init__(self, territory_dictionary):
