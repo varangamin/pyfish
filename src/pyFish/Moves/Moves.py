@@ -34,8 +34,7 @@ class Move(metaclass=abc.ABCMeta):
     def to_query_string(self):
         """Create a query string containing the name of the move and its arguments."""
         query_string = '&{0}={1}'.format('action', self.action_id)
-        for key, value in self.arguments.items():
-            query_string += "&{0}={1}".format(key, value)
+        query_string += '&'.join(['%s=%s' % item for item in self.argumentsitems()])
         return query_string
 
 """A concrete implementation of Move for attacks."""
@@ -69,6 +68,18 @@ class PlaceUnitsMove(Move):
     @property
     def action_id(self):
         return 'placeunits'
+
+"""Used during turn-based play. It allows you to move additional armies after a successful attack. """
+class FreeTransferMove(Move):
+    
+    def __init__(self, number_of_armies):
+        """A move to place units takes a list of territory ids and a matching list of the number of units to put onto each territory."""
+        super().__init__()
+        self.arguments['numunits'] = number_of_armies
+    
+    @property
+    def action_id(self):
+        return 'freetransfer'
 
         
 if __name__ == "__main__":

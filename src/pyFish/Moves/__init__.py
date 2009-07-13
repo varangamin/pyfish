@@ -1,1 +1,1 @@
-__all__ = ['Moves', 'MoveResults']
+__all__ = ['History', 'Moves', 'MoveResults']
