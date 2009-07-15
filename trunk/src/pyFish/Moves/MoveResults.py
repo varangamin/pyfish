@@ -16,12 +16,25 @@
 #along with pyFish.  If not, see <http://www.gnu.org/licenses/>.
 
 """This module provides classes for the results of moves."""
+
+import abc
+
+class MoveResult(metaclass=abc.ABCMeta):
     
-class AttackMoveResult:
+    @abc.abstractmethod
+    def __init__(self, move_result_dictionary):
+        self.result_code = move_result_dictionary['_content']['return']['code']
+        self.result_message = move_result_dictionary['_content']['return']['msg']
+        self.possible_actions = []
+        for action in move_result_dictionary['_content']['return']['_content']['possibleactions']['_content']['action']:
+            possible_actions.append(action['id'])
+
+class AttackMoveResult(MoveResult):
     
     def __init__(self, move_result_dictionary, attack_move):
         """Takes the results from the given attack move and creates a result object."""
         #TODO: Finish implementing
+        super().__init__(move_result_dictionary)
         self.attackers_lost = move_result_dictionary['_content']['return']['_content']['results']['totalattackerlosses']
         self.defenders_lost = move_result_dictionary['_content']['return']['_content']['results']['totaldefenderlosses']
         self.from_territory_id = attack_move.from_territory.id
@@ -31,14 +44,16 @@ class AttackMoveResult:
 class PlaceUnitsMoveResult:
     
     def __init__(self, move_result_dictionary, place_units_move):
-        pass
+        super().__init__(move_result_dictionary)
 
 class FreeTransferMoveResult:
     
     def __init__(self, move_result_dictionary, free_transfer_move):
-        pass
+        super().__init__(move_result_dictionary)
 
-move_result_constructors = dict(attack=AttackMoveResult) 
+move_result_constructors = dict(attack=AttackMoveResult,
+                                placeunits=PlaceUnitsMoveResult,
+                                freetransfer=FreeTransferMoveResult) 
 
 def process_move_result(move_result_dictionary, move):
     """After taking a move Warfish returns information about that move as json. This takes

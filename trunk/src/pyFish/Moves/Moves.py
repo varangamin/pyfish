@@ -18,30 +18,10 @@
 """A game of Warfish is represented by a series of moves. This abstract base class
 provides a simple interface for executing specific types of moves."""
 
-import abc
-
-class Move(metaclass=abc.ABCMeta):
-    
-    @abc.abstractmethod
-    def __init__(self):
-        self.arguments = {}
-    
-    @abc.abstractproperty
-    def action_id(self):
-        """The action for this move."""
-        raise NotImplementedError()
-    
-    def to_query_string(self):
-        """Create a query string containing the name of the move and its arguments."""
-        query_string = '&{0}={1}'.format('action', self.action_id)
-        query_string += '&'.join(['%s=%s' % item for item in self.argumentsitems()])
-        return query_string
-
-"""A concrete implementation of Move for attacks."""
-class AttackMove(Move):
+"""Make an attack."""
+class AttackMove:
     
     def __init__(self, from_territory, to_territory, number_of_units, is_continuous):
-        super().__init__()
         self.from_territory = from_territory
         self.to_territory = to_territory
         self.number_of_units = number_of_units
@@ -54,33 +34,50 @@ class AttackMove(Move):
     @property
     def action_id(self):
         return 'attack'
-
-"""A concrete implementation of Move for placing units in blind-at-once unit 
-placement during game setup or in unit placement phase during a turn-based play turn. """
-class PlaceUnitsMove(Move):
     
-    def __init__(self, territory_ids=(), number_of_units=()):
+    def to_query_string(self):
+        """Create a query string containing the name of the move and its arguments."""
+        query_string = '&action={0}'.format(self.action_id)
+        query_string += ''.join(['&%s=%s' % item for item in self.arguments.items()])
+        return query_string
+
+"""Place units in blind-at-once unit placement during game setup or in unit 
+placement phase during a turn-based play turn. """
+class PlaceUnitsMove:
+    
+    def __init__(self, territory_ids=[], number_of_units=[]):
         """A move to place units takes a list of territory ids and a matching list of the number of units to put onto each territory."""
-        super().__init__()
-        self.arguments['clist'] = territories_ids
-        self.arguments['ulist'] = number_of_units
+        self.action_id = 'placeunits'
+        self.territory_ids = territory_ids
+        self.number_of_units = number_of_units
     
-    @property
-    def action_id(self):
-        return 'placeunits'
+    def to_query_string(self):
+        query_string = '&action={0}'.format(self.action_id)
+        query_string += '&clist={0}'.format(','.join(self.territory_ids)) + '&ulist={0}'.format(','.join(self.number_of_units))
+        return query_string
 
-"""Used during turn-based play. It allows you to move additional armies after a successful attack. """
-class FreeTransferMove(Move):
+"""Used during turn-based play. It allows you to move additional armies after a successful attack."""
+class FreeTransferMove:
     
     def __init__(self, number_of_armies):
         """A move to place units takes a list of territory ids and a matching list of the number of units to put onto each territory."""
-        super().__init__()
-        self.arguments['numunits'] = number_of_armies
+        self.number_of_armies = number_of_armies
     
     @property
     def action_id(self):
         return 'freetransfer'
+    
+    def to_query_string(self):
+        return '&action={0}&numunits={1}'.format(self.action_id, self.number_of_armies)
 
+"""Ends your turn."""
+class EndTurnMove:
+    
+    def __init__(self):
+        self.action_id = 'endturn'
+    
+    def to_query_string(self):
+        return '&action={0}'.format(self.action_id)
         
 if __name__ == "__main__":
     import doctest

@@ -25,6 +25,8 @@ COOKIE = 'SESSID=21548ed928da03bb61bade292db94948; LAST=829925F678A3F7AB3A03F11E
 
 game = Core.initialize_game(GAME_ID, COOKIE)
 
+print(game.possible_actions)
+
 #print("Territories")
 #for continent_id, continent in game.map.continents.items():
 #    print(continent.name)
