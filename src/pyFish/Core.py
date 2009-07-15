@@ -30,16 +30,11 @@ TURN_BASED, AUTO, BLIND_AT_ONCE = range(3)
 
 def initialize_game(game_id, cookie):
     """Pulls down all of the game information from Warfish and creates a Game object."""
-    details_response = urllib.request.urlopen('{0}?_method={1}&gid={2}&sections=board,rules,map,continents&_format=json'.format(WARFISH_URL, WARFISH_METHODS['details'], game_id))
-    details = json.loads(bytes.decode(details_response.read()))
     
-    print('{0}?_method={1}&gid={2}&sections=board,players,possibleactions&_format=json'.format(WARFISH_URL, WARFISH_METHODS['state'], game_id))
-    state_response = urllib.request.urlopen('{0}?_method={1}&gid={2}&sections=board,players,possibleactions&_format=json'.format(WARFISH_URL, WARFISH_METHODS['state'], game_id))
-    state = json.loads(bytes.decode(state_response.read()))
-    
+    details = request_game_info(WARFISH_METHODS['details'], game_id, cookie, sections=('board', 'rules', 'map', 'continents'))
+    state = request_game_info(WARFISH_METHODS['state'], game_id, cookie, sections=('players', 'board', 'possibleactions'))
     #TODO: Right now this assumes their are no more than 1500 moves. This is incorrect and needs fixed at some point.
-    history_response = urllib.request.urlopen('{0}?_method={1}&gid={2}&start=-1&num=1500&_format=json'.format(WARFISH_URL, WARFISH_METHODS['history'], game_id))
-    history = json.loads(bytes.decode(history_response.read()))
+    history = request_game_info(WARFISH_METHODS['history'], game_id, cookie, additional_parameters={'start': '-1', 'num': '1500'})
     
     players = {player_info['id'] : Player(player_info) for player_info in state['_content']['players']['_content']['player']}
     map = Map(details['_content']['map']['_content']['territory'], 
@@ -51,9 +46,21 @@ def initialize_game(game_id, cookie):
     history = History.process_history(history['_content']['movelog']['_content']['m'])
     possible_actions = []
     for action in state['_content']['possibleactions']['_content']['action']:
-        possible_actions.append(action.value)
+        possible_actions.append(action['id'])
     
-    return Game(game_id, map, players, rules, history, cookie)
+    return Game(game_id, map, players, rules, history, cookie, possible_actions)
+
+def request_game_info(method, game_id, cookie, sections=None, additional_parameters=None):
+    """Make a request to Warfish and return the results as a dictionary."""
+    
+    url = '{0}?_method={1}&gid={2}&_format=json'.format(WARFISH_URL, method, game_id)
+    if sections:
+        url += '&sections={0}'.format(','.join(sections))
+    if additional_parameters:
+        url += ''.join(['&%s=%s' % item for item in additional_parameters.items()])
+    request = urllib.request.Request(url, None, {'Cookie': cookie} )
+    response = urllib.request.urlopen(request)
+    return json.loads(bytes.decode(response.read()))
 
 """Represents a Warfish game. This is currently limited to only supporting 
 a standard game of Risk. While Warfish allows customization of rules this is not currently supported."""
@@ -72,9 +79,8 @@ class Game:
     def execute_move(self, move):
         complete_url = '{0}?_method={1}&gid={2}{3}&_format=json'.format(WARFISH_URL, WARFISH_METHODS['doMove'], self.id, move.to_query_string())
         request = urllib.request.Request(complete_url, None, {'Cookie': self.cookie} )
-        move_response = urllib.request.urlopen(request)
-        json = json.loads(bytes.decode(move_response.read()))
-        return MoveResults.process_move_result(json, move)
+        move_response = urllib.request.urlopen(request) 
+        return MoveResults.process_move_result(json.loads(bytes.decode(move_response.read())), move)
 
 """A map in Warfish is made up of territories, which can be organized into continents."""
 class Map:
@@ -95,7 +101,7 @@ class Map:
             if item['playerid'] != '-1':
                 player = players_dictionary[item['playerid']]
                 territory.owner = player
-                player.territories[territory.id] = territory
+                player.territories.append(territory)
             territory.armies = int(item['units'])
 
 """A continent represents a collection of territories that give a bonus when controlled by a single player."""
@@ -118,12 +124,12 @@ class Player:
         self.name = player_dictionary['name']
         self.is_turn = player_dictionary['isturn'] != 0
         self.active = player_dictionary['active'] != 0
-        self.team_id = player_dictionary['teamid']
-        self.reserve_units = player_dictionary['units']
+        self.team_id = int(player_dictionary['teamid'])
+        self.reserve_units = int(player_dictionary['units'])
         self.profile_id = player_dictionary['profileid']
-        self.id = player_dictionary['id']
+        self.id = int(player_dictionary['id'])
         self.cards = ()
-        self.territories = {} 
+        self.territories = []
 
 """Warfish rules are highly customizable. The Rules class represents the rules
 for a particular game."""
