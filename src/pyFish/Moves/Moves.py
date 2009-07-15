@@ -25,11 +25,7 @@ class AttackMove:
         self.from_territory = from_territory
         self.to_territory = to_territory
         self.number_of_units = number_of_units
-        self.is_continous = is_continuous
-        self.arguments['fromcid'] = from_territory.id
-        self.arguments['tocid'] = to_territory.id
-        self.arguments['numunits'] = str(number_of_units)
-        self.arguments['continuous'] = '1' if is_continuous else '0'
+        self.is_continuous = is_continuous
         
     @property
     def action_id(self):
@@ -38,7 +34,7 @@ class AttackMove:
     def to_query_string(self):
         """Create a query string containing the name of the move and its arguments."""
         query_string = '&action={0}'.format(self.action_id)
-        query_string += ''.join(['&%s=%s' % item for item in self.arguments.items()])
+        query_string += '&fromcid={0}&tocid={1}&numunits={2}&continuous={3}'.format(self.from_territory.id, self.to_territory.id, self.number_of_units, '1' if self.is_continuous else '0')
         return query_string
 
 """Place units in blind-at-once unit placement during game setup or in unit 

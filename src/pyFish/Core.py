@@ -19,8 +19,8 @@ import json
 import urllib.request
 from pyFish.Moves import *
 
-#WARFISH_URL = 'http://216.169.106.90/war/services/rest'
-WARFISH_URL = 'http://warfish.net/war/services/rest'
+WARFISH_URL = 'http://216.169.106.90/war/services/rest'
+#WARFISH_URL = 'http://warfish.net/war/services/rest'
 WARFISH_METHODS = {'details': 'warfish.tables.getDetails',
                    'state': 'warfish.tables.getState',
                    'history': 'warfish.tables.getHistory',
@@ -45,8 +45,9 @@ def initialize_game(game_id, cookie):
     rules = Rules(details['_content']['rules'])  
     history = History.process_history(history['_content']['movelog']['_content']['m'])
     possible_actions = []
-    for action in state['_content']['possibleactions']['_content']['action']:
-        possible_actions.append(action['id'])
+    if '_content' in state['_content']['possibleactions']:
+        for action in state['_content']['possibleactions']['_content']['action']:
+            possible_actions.append(action['id'])
     
     return Game(game_id, map, players, rules, history, cookie, possible_actions)
 
@@ -78,6 +79,7 @@ class Game:
     
     def execute_move(self, move):
         complete_url = '{0}?_method={1}&gid={2}{3}&_format=json'.format(WARFISH_URL, WARFISH_METHODS['doMove'], self.id, move.to_query_string())
+        print(complete_url)
         request = urllib.request.Request(complete_url, None, {'Cookie': self.cookie} )
         move_response = urllib.request.urlopen(request) 
         return MoveResults.process_move_result(json.loads(bytes.decode(move_response.read())), move)
