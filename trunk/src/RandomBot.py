@@ -34,7 +34,7 @@ class RandomBot:
         
     def take_turn(self):
         
-        while True:
+        while len(self.game.possible_actions) > 0:
             move_result = None
             if 'placeunits' in self.game.possible_actions:
                 move_result = self.place_units()
@@ -83,7 +83,25 @@ class RandomBot:
         for territory, attackable_neighbors in attack_targets.items():
             for neighbor in attackable_neighbors:
                 attack_move = Moves.AttackMove(territory, neighbor, territory.armies-1, True)
-                return self.game.execute_move(attack_move)
+                attack_move_result = self.game.execute_move(attack_move)
+                if attack_move_result.captured:
+                    if 'freetransfer' in attack_move_result.possible_actions:
+                        territory.armies -= attack_move_result.attackers_lost
+                        #Move all but one of the remaining armies to the captured territory.
+                        free_transfer_move = Moves.FreeTransferMove(territory.armies - 4)
+                        free_transfer_move_result = self.game.execute_move(free_transfer_move)
+                        neighbor.armies = territory.armies - 1
+                        territory.armies = 1
+                        pass
+                    else:
+                        neighbor.owner = self.player
+                        #If there is no free transfer than all armies but one are moving to the captured territory
+                        neighbor.armies = territory.armies - 1
+                        territory.armies = 1
+                else:
+                    territory.armies -= attack_move_result.attackers_lost
+                    neighbor.armies -= attack_move_result.defenders_lost 
+                return attack_move_result
             
 bot = RandomBot(GAME_ID, PLAYER_NAME, COOKIE)
 bot.take_turn()

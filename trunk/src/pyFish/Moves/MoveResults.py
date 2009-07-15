@@ -23,11 +23,12 @@ class MoveResult(metaclass=abc.ABCMeta):
     
     @abc.abstractmethod
     def __init__(self, move_result_dictionary):
+        print(move_result_dictionary)
         self.result_code = move_result_dictionary['_content']['return']['code']
         self.result_message = move_result_dictionary['_content']['return']['msg']
         self.possible_actions = []
         for action in move_result_dictionary['_content']['return']['_content']['possibleactions']['_content']['action']:
-            possible_actions.append(action['id'])
+            self.possible_actions.append(action['id'])
 
 class AttackMoveResult(MoveResult):
     
@@ -35,18 +36,22 @@ class AttackMoveResult(MoveResult):
         """Takes the results from the given attack move and creates a result object."""
         #TODO: Finish implementing
         super().__init__(move_result_dictionary)
-        self.attackers_lost = move_result_dictionary['_content']['return']['_content']['results']['totalattackerlosses']
-        self.defenders_lost = move_result_dictionary['_content']['return']['_content']['results']['totaldefenderlosses']
+        self.attackers_lost = int(move_result_dictionary['_content']['return']['_content']['results']['totalattackerlosses'])
+        self.defenders_lost = int(move_result_dictionary['_content']['return']['_content']['results']['totaldefenderlosses'])
+        if 'captured' in move_result_dictionary['_content']['return']['_content']['results']:
+            self.captured = bool(int(move_result_dictionary['_content']['return']['_content']['results']['captured']))
+        else:
+            self.captured = False
         self.from_territory_id = attack_move.from_territory.id
         self.to_territory_id = attack_move.to_territory.id
-        self.defending_player_id = attack_move.to_territory.owner.id
+        self.defending_player_id = attack_move.to_territory.owner.id if attack_move.to_territory.owner != None else '-1'
 
-class PlaceUnitsMoveResult:
+class PlaceUnitsMoveResult(MoveResult):
     
     def __init__(self, move_result_dictionary, place_units_move):
         super().__init__(move_result_dictionary)
 
-class FreeTransferMoveResult:
+class FreeTransferMoveResult(MoveResult):
     
     def __init__(self, move_result_dictionary, free_transfer_move):
         super().__init__(move_result_dictionary)
