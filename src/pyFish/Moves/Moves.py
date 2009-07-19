@@ -41,15 +41,15 @@ class AttackMove:
 placement phase during a turn-based play turn. """
 class PlaceUnitsMove:
     
-    def __init__(self, territory_ids=[], number_of_units=[]):
+    def __init__(self, territory_dict):
         """A move to place units takes a list of territory ids and a matching list of the number of units to put onto each territory."""
         self.action_id = 'placeunits'
-        self.territory_ids = territory_ids
-        self.number_of_units = number_of_units
+        self.territory_dict = territory_dict
     
     def to_query_string(self):
         query_string = '&action={0}'.format(self.action_id)
-        query_string += '&clist={0}'.format(','.join(self.territory_ids)) + '&ulist={0}'.format(','.join(self.number_of_units))
+        territory_ids = {territory.id for territory in self.territory_dict.keys()}
+        query_string += '&clist={0}'.format(','.join(territory_ids)) + '&ulist={0}'.format(','.join(self.territory_dict.values()))
         return query_string
 
 """Used during turn-based play. It allows you to move additional armies after a successful attack."""
