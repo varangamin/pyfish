@@ -76,13 +76,18 @@ class Game:
         self.history = history
         self.cookie = cookie
         self.possible_actions = possible_actions
+        self.last_move = None
     
     def execute_move(self, move):
         complete_url = '{0}?_method={1}&gid={2}{3}&_format=json'.format(WARFISH_URL, WARFISH_METHODS['doMove'], self.id, move.to_query_string())
         print(complete_url)
+        
         request = urllib.request.Request(complete_url, None, {'Cookie': self.cookie} )
-        move_response = urllib.request.urlopen(request) 
-        return MoveResults.process_move_result(json.loads(bytes.decode(move_response.read())), move)
+        move_response = urllib.request.urlopen(request)
+         
+        move_result = MoveResults.process_move_result(json.loads(bytes.decode(move_response.read())), move, self)
+        self.last_move = move
+        return move_result
 
 """A map in Warfish is made up of territories, which can be organized into continents."""
 class Map:

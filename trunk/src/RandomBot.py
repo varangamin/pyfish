@@ -22,6 +22,8 @@ GAME_ID = '53420604'
 PLAYER_NAME = 'The Curmudgeon'
 COOKIE = 'SESSID=21548ed928da03bb61bade292db94948; LAST=829925F678A3F7AB3A03F11EC9BCBB6800340380D4A4'
 
+"""A basic bot with no intelligence that can successfully complete moves.
+It has no error handling though."""
 class RandomBot:
     
     def __init__(self, game_id, player_name, cookie):
@@ -33,20 +35,24 @@ class RandomBot:
                 break
         
     def take_turn(self):
-        
+        """Execute a full turn."""
         while len(self.game.possible_actions) > 0:
             move_result = None
             if 'placeunits' in self.game.possible_actions:
+                print('Placing Units')
                 move_result = self.place_units()
             elif 'attack' in self.game.possible_actions:
+                print('Attacking')
                 attack_targets = self.find_attack_targets()
                 if len(attack_targets) > 0:
                     move_result = self.attack(attack_targets)
                 else:
                     self.game.possible_actions.remove('attack')
             elif 'transfer' in self.game.possible_actions:
+                print('Skipping Transfers')
                 self.game.possible_actions.remove('transfer')
             elif 'endturn' in self.game.possible_actions:
+                print('Ending Turn')
                 self.game.execute_move(Moves.EndTurnMove())
                 break
             else:
@@ -54,20 +60,24 @@ class RandomBot:
             if move_result != None:
                 self.game.possible_actions = move_result.possible_actions
                 print(move_result)
+        print("Turn Complete")
     
     def place_units(self):
+        """Places units round robin on the board until they have all been placed."""
         remaining_units = self.player.reserve_units
-        place_units_move = Moves.PlaceUnitsMove()
+        territory_dict = {}
         while remaining_units > 0:
             for territory in self.player.territories:
-                place_units_move.territory_ids.append(territory.id)
-                place_units_move.number_of_units.append('1')
+                territory_dict[territory] = '1'
                 remaining_units -= 1
                 if remaining_units == 0:
                     break
+        place_units_move = Moves.PlaceUnitsMove(territory_dict)
         return self.game.execute_move(place_units_move)
     
     def find_attack_targets(self):
+        """Finds all territories that the bot controls with 4 or more armies and the neighbors that 
+        can be attacked from that territory."""
         can_attack_from = {}
         for territory in self.player.territories:
             if territory.armies >= 4:
@@ -79,28 +89,16 @@ class RandomBot:
         return can_attack_from
     
     def attack(self, attack_targets):
-        #Get every attackable territory.
+        """Picks one of the attack_targets and attacks it continuously. It will also handle
+        the free transfer after capturing a territory if needed."""
         for territory, attackable_neighbors in attack_targets.items():
             for neighbor in attackable_neighbors:
                 attack_move = Moves.AttackMove(territory, neighbor, territory.armies-1, True)
                 attack_move_result = self.game.execute_move(attack_move)
-                if attack_move_result.captured:
-                    if 'freetransfer' in attack_move_result.possible_actions:
-                        territory.armies -= attack_move_result.attackers_lost
-                        #Move all but one of the remaining armies to the captured territory.
-                        free_transfer_move = Moves.FreeTransferMove(territory.armies - 4)
-                        free_transfer_move_result = self.game.execute_move(free_transfer_move)
-                        neighbor.armies = territory.armies - 1
-                        territory.armies = 1
-                        pass
-                    else:
-                        neighbor.owner = self.player
-                        #If there is no free transfer than all armies but one are moving to the captured territory
-                        neighbor.armies = territory.armies - 1
-                        territory.armies = 1
-                else:
-                    territory.armies -= attack_move_result.attackers_lost
-                    neighbor.armies -= attack_move_result.defenders_lost 
+                if attack_move_result.captured and 'freetransfer' in attack_move_result.possible_actions:
+                    #Move all but one of the remaining armies to the captured territory.
+                    free_transfer_move = Moves.FreeTransferMove(territory.armies - 4)
+                    free_transfer_move_result = self.game.execute_move(free_transfer_move) 
                 return attack_move_result
             
 bot = RandomBot(GAME_ID, PLAYER_NAME, COOKIE)
