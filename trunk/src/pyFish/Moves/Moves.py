@@ -49,7 +49,7 @@ class PlaceUnitsMove:
     def to_query_string(self):
         query_string = '&action={0}'.format(self.action_id)
         territory_ids = {territory.id for territory in self.territory_dict.keys()}
-        query_string += '&clist={0}'.format(','.join(territory_ids)) + '&ulist={0}'.format(','.join(self.territory_dict.values()))
+        query_string += '&clist={0}'.format(','.join(territory_ids)) + '&ulist={0}'.format(','.join([str(value) for value in self.territory_dict.values()]))
         return query_string
 
 """Used during turn-based play. It allows you to move additional armies after a successful attack."""

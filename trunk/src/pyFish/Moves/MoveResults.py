@@ -48,6 +48,8 @@ class AttackMoveResult(MoveResult):
             self.captured = False
         if 'eliminate' in move_result_dictionary['_content']['return']['_content']['results']:
             self.defender_eliminated  = move_result_dictionary['_content']['return']['_content']['results']['eliminate'] != '0'
+        else:
+            self.defender_eliminated = False
         self.from_territory = attack_move.from_territory
         self.to_territory = attack_move.to_territory
         self.defending_player = attack_move.to_territory.owner
@@ -62,13 +64,13 @@ class AttackMoveResult(MoveResult):
             self.to_territory.owner = self.from_territory.owner
             
             if 'freetransfer' in self.possible_actions:
-                self.from_territory.armies -= attack_move_result.attackers_lost - 3
+                self.from_territory.armies -= self.attackers_lost - 3
                 self.to_territory.armies = 3
             else:
                 self.to_territory.armies = self.from_territory.armies - 1 
                 self.from_territory.armies = 1
                 
-            if attack_move_result.defender_eliminated:
+            if self.defender_eliminated:
                 self.defending_player.active = False
                  
 

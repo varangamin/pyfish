@@ -39,28 +39,28 @@ class RandomBot:
         while len(self.game.possible_actions) > 0:
             move_result = None
             if 'placeunits' in self.game.possible_actions:
-                print('Placing Units')
+                print('\r\nPlacing Units')
                 move_result = self.place_units()
             elif 'attack' in self.game.possible_actions:
-                print('Attacking')
+                print('\r\nAttacking')
                 attack_targets = self.find_attack_targets()
                 if len(attack_targets) > 0:
                     move_result = self.attack(attack_targets)
                 else:
                     self.game.possible_actions.remove('attack')
             elif 'transfer' in self.game.possible_actions:
-                print('Skipping Transfers')
+                print('\r\nSkipping Transfers')
                 self.game.possible_actions.remove('transfer')
             elif 'endturn' in self.game.possible_actions:
-                print('Ending Turn')
+                print('\r\nEnding Turn')
                 self.game.execute_move(Moves.EndTurnMove())
                 break
             else:
-                print("No valid move found")
+                print("\r\nNo valid move found")
             if move_result != None:
                 self.game.possible_actions = move_result.possible_actions
                 print(move_result)
-        print("Turn Complete")
+        print("\r\nTurn Complete")
     
     def place_units(self):
         """Places units round robin on the board until they have all been placed."""
@@ -68,7 +68,7 @@ class RandomBot:
         territory_dict = {}
         while remaining_units > 0:
             for territory in self.player.territories:
-                territory_dict[territory] = '1'
+                territory_dict[territory] = 1
                 remaining_units -= 1
                 if remaining_units == 0:
                     break
