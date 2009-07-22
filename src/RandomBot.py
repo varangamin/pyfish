@@ -18,12 +18,18 @@
 from pyFish import Core
 from pyFish.Moves import *
 
-GAME_ID = '53420604'
-PLAYER_NAME = 'The Curmudgeon'
-COOKIE = 'SESSID=21548ed928da03bb61bade292db94948; LAST=829925F678A3F7AB3A03F11EC9BCBB6800340380D4A4'
+
+#You must provide values for the following variables
+
+#The id of the game the bot is to play. 
+GAME_ID = ''
+#The name of the player in the game the bot will be playing for.
+PLAYER_NAME = ''
+#The cookie the bot will use to authenticate as PLAYER_NAME
+COOKIE = '' 
 
 """A basic bot with no intelligence that can successfully complete moves.
-It has no error handling though."""
+It has no error handling."""
 class RandomBot:
     
     def __init__(self, game_id, player_name, cookie):
@@ -97,7 +103,7 @@ class RandomBot:
                 attack_move_result = self.game.execute_move(attack_move)
                 if attack_move_result.captured and 'freetransfer' in attack_move_result.possible_actions:
                     #Move all but one of the remaining armies to the captured territory.
-                    free_transfer_move = Moves.FreeTransferMove(territory.armies - 4)
+                    free_transfer_move = Moves.FreeTransferMove(territory.armies - 1)
                     free_transfer_move_result = self.game.execute_move(free_transfer_move) 
                 return attack_move_result
             
