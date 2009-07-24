@@ -109,7 +109,8 @@ class Map:
                 player = players_dictionary[item['playerid']]
                 territory.owner = player
                 player.territories.append(territory)
-            territory.armies = int(item['units'])
+            if item['units'] != '?':
+                territory.armies = int(item['units'])
 
 """A continent represents a collection of territories that give a bonus when controlled by a single player."""
 class Continent:
@@ -117,7 +118,7 @@ class Continent:
     def __init__(self, continent_dictionary, territories):
         self.name = continent_dictionary['name']
         self.id = continent_dictionary['id']
-        self.bonus = continent_dictionary['units']
+        self.bonus = int(continent_dictionary['units'])
         self.territories = {}
         for id in continent_dictionary['cids'].split(','):
             for key, value in territories.items():
@@ -132,7 +133,8 @@ class Player:
         self.is_turn = player_dictionary['isturn'] != 0
         self.active = player_dictionary['active'] != 0
         self.team_id = int(player_dictionary['teamid'])
-        self.reserve_units = int(player_dictionary['units'])
+        if player_dictionary['units'] != '?':
+            self.reserve_units = int(player_dictionary['units'])  
         self.profile_id = player_dictionary['profileid']
         self.id = int(player_dictionary['id'])
         self.cards = ()

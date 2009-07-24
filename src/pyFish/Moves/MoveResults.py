@@ -38,7 +38,6 @@ class AttackMoveResult(MoveResult):
     
     def __init__(self, move_result_dictionary, attack_move):
         """Takes the results from the given attack move and creates a result object."""
-        #TODO: Finish implementing
         super().__init__(move_result_dictionary)
         self.attackers_lost = int(move_result_dictionary['_content']['return']['_content']['results']['totalattackerlosses'])
         self.defenders_lost = int(move_result_dictionary['_content']['return']['_content']['results']['totaldefenderlosses'])

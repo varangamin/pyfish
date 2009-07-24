@@ -22,11 +22,11 @@ from pyFish.Moves import *
 #You must provide values for the following variables
 
 #The id of the game the bot is to play. 
-GAME_ID = ''
+GAME_ID = '88092999'
 #The name of the player in the game the bot will be playing for.
-PLAYER_NAME = ''
+PLAYER_NAME = 'The Curmudgeon'
 #The cookie the bot will use to authenticate as PLAYER_NAME
-COOKIE = '' 
+COOKIE = 'SESSID=21548ed928da03bb61bade292db94948; LAST=829925F678A3F7AB3A03F11EC9BCBB6800340380D4A4' 
 
 """A basic bot with no intelligence that can successfully complete moves.
 It has no error handling."""
@@ -106,6 +106,38 @@ class RandomBot:
                     free_transfer_move = Moves.FreeTransferMove(territory.armies - 1)
                     free_transfer_move_result = self.game.execute_move(free_transfer_move) 
                 return attack_move_result
+
+def calculateContinentUtility(game):
+    utilities = {}
+    for continent in game.map.continents.values():
+        access_points = set()
+        neighbors = set()
+        border_territories = {}
+        print(continent.name)
+        print("    Bonus: {0}".format(continent.bonus))
+        print("    Number of territories: {0}".format(len(continent.territories)))
+        for territory in continent.territories.values():
+            for neighbor in territory.defendable_neighbors.values():
+                if neighbor not in continent.territories.values():
+                    border_territories.setdefault(territory, 0)
+                    border_territories[territory] = border_territories[territory] + 1
+                    access_points.add(territory)
+                    neighbors.add(neighbor)
+        print("    Total Access Points: {0}".format(len(access_points)))
+        print("    Total Neighbors: {0}".format(len(neighbors)))
+        
+        worst_neighbor_count = 0
+        for territory, number_of_outside_neighbors in border_territories.items():
+            if number_of_outside_neighbors > worst_neighbor_count:
+                worst_neighbor_count = number_of_outside_neighbors
+        print("    Max outside neighbors: {0}".format(worst_neighbor_count))
+        
+        utility = continent.bonus - len(continent.territories) - len(access_points) - len(neighbors) - worst_neighbor_count
+        print("    Utility: {0}".format(utility))
+        utilities[continent] = utility
+                    
             
 bot = RandomBot(GAME_ID, PLAYER_NAME, COOKIE)
 bot.take_turn()
+
+calculateContinentUtility(bot.game)
