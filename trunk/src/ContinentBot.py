@@ -43,20 +43,20 @@ class ContinentBot:
         target_continent = max(continent_utilities, key = lambda a: continent_utilities.get(a))
         print("Target Continent: {0}".format(target_continent.name))
         
-        placement_territory = None
+        attack_base = None
         
         """Execute a full turn."""
         while len(self.game.possible_actions) > 0:
             move_result = None
             if 'placeunits' in self.game.possible_actions:
                 print('\r\nPlacing Units')
-                placement_territory = self.find_placement_territory(target_continent)
-                move_result = self.place_units(placement_territory)
+                attack_base = self.find_placement_territory(target_continent)
+                move_result = self.place_units(attack_base)
             elif 'attack' in self.game.possible_actions:
                 print('\r\nAttacking')
-                attack_target = self.find_attack_target(target_continent, placement_territory)
+                attack_target = self.find_attack_target(target_continent, attack_base)
                 if attack_target != None:
-                    move_result = self.attack(attack_target, placement_territory)
+                    move_result = self.attack(attack_target, attack_base)
                 else:
                     self.game.possible_actions.remove('attack')
             elif 'transfer' in self.game.possible_actions:
@@ -88,23 +88,24 @@ class ContinentBot:
         place_units_move = Moves.PlaceUnitsMove({placement_territory: self.player.reserve_units})
         return self.game.execute_move(place_units_move)
     
-    def find_attack_target(self, target_continent, placement_territory):
+    def find_attack_target(self, target_continent, attack_base):
         """Find a neighbor of the territory we placed all the units on that is part of continent we want to take."""
-        if placement_territory.armies > 3:
-            for neighbor in placement_territory.attackable_neighbors.values():
+        if attack_base.armies > 3:
+            for neighbor in attack_base.attackable_neighbors.values():
                 if neighbor in target_continent.territories.values() and neighbor.owner != self.player:
                     return neighbor
         return None
     
-    def attack(self, attack_target, placement_territory):
+    def attack(self, attack_target, attack_base):
         """Picks one of the attack_targets and attacks it continuously. It will also handle
         the free transfer after capturing a territory if needed."""
-        attack_move = Moves.AttackMove(placement_territory, attack_target, placement_territory.armies-1, True)
+        attack_move = Moves.AttackMove(attack_base, attack_target, attack_base.armies-1, True)
         attack_move_result = self.game.execute_move(attack_move)
         if attack_move_result.captured and 'freetransfer' in attack_move_result.possible_actions:
             #Move all but one of the remaining armies to the captured territory.
-            free_transfer_move = Moves.FreeTransferMove(territory.armies - 1)
-            free_transfer_move_result = self.game.execute_move(free_transfer_move) 
+            free_transfer_move = Moves.FreeTransferMove(attack_base.armies - 1)
+            free_transfer_move_result = self.game.execute_move(free_transfer_move)
+            attack_base = attack_target
         return attack_move_result
 
     def calculate_continent_utility(self):
