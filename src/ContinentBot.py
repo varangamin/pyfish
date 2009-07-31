@@ -100,13 +100,13 @@ class ContinentBot:
         """Picks one of the attack_targets and attacks it continuously. It will also handle
         the free transfer after capturing a territory if needed."""
         attack_move = Moves.AttackMove(attack_base, attack_target, attack_base.armies-1, True)
-        attack_move_result = self.game.execute_move(attack_move)
-        if attack_move_result.captured and 'freetransfer' in attack_move_result.possible_actions:
+        move_result = self.game.execute_move(attack_move)
+        if move_result.captured and 'freetransfer' in move_result.possible_actions:
             #Move all but one of the remaining armies to the captured territory.
             free_transfer_move = Moves.FreeTransferMove(attack_base.armies - 1)
-            free_transfer_move_result = self.game.execute_move(free_transfer_move)
+            move_result = self.game.execute_move(free_transfer_move)
             attack_base = attack_target
-        return attack_move_result
+        return move_result
 
     def calculate_continent_utility(self):
         """Naively calculates the value of each continent as 
