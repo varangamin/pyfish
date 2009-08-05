@@ -63,7 +63,7 @@ class AttackMoveResult(MoveResult):
             self.to_territory.owner = self.from_territory.owner
             
             if 'freetransfer' in self.possible_actions:
-                self.from_territory.armies -= self.from_territory.armies - 3
+                self.from_territory.armies = self.from_territory.armies - 3
                 self.to_territory.armies = 3
             else:
                 self.to_territory.armies = self.from_territory.armies - 1 
