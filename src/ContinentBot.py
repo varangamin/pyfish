@@ -57,6 +57,8 @@ class ContinentBot:
                 attack_target = self.find_attack_target(target_continent, attack_base)
                 if attack_target != None:
                     move_result = self.attack(attack_target, attack_base)
+                    if isinstance(move_result, MoveResults.FreeTransferMoveResult) or move_result.captured:
+                        attack_base = attack_target 
                 else:
                     self.game.possible_actions.remove('attack')
             elif 'transfer' in self.game.possible_actions:
@@ -75,13 +77,19 @@ class ContinentBot:
     
     def find_placement_territory(self, target_continent):
         """Look at all of the territories in the continent and see if the bot owns any of those territories neighbors."""
+        possible_territories = {}
         for territory in target_continent.territories.values():
             if territory.owner == self.player:
                 for neighbor in territory.attackable_neighbors.values():
                     if neighbor.owner != self.player and neighbor in target_continent.territories.values():
-                        return territory
-        #TODO: If I don't own any territories on the continent or any neighboring territories this will not work.
-        return None
+                        possible_territories[territory] = armies
+            for neighbor in territory.defendable_neighbors.values():
+                if neighbor.owner == self.player:
+                    possible_territories[neighbor] = neighbor.armies
+        if len(possible_territories) > 0:
+            return max(possible_territories, key = lambda a: possible_territories.get(a))
+        else:
+            return None
     
     def place_units(self, placement_territory):
         """Places all units on the placement_territory."""
@@ -105,7 +113,6 @@ class ContinentBot:
             #Move all but one of the remaining armies to the captured territory.
             free_transfer_move = Moves.FreeTransferMove(attack_base.armies - 1)
             move_result = self.game.execute_move(free_transfer_move)
-            attack_base = attack_target
         return move_result
 
     def calculate_continent_utility(self):
@@ -114,6 +121,7 @@ class ContinentBot:
         This leans towards small, easy to defend territories and then weights them towards which ones you own the most of."""
         utilities = {}
         for continent in self.game.map.continents.values():
+            reachable = False
             access_points = set()
             neighbors = set()
             border_territories = {}
@@ -133,6 +141,8 @@ class ContinentBot:
                         border_territories[territory] = border_territories[territory] + 1
                         access_points.add(territory)
                         neighbors.add(neighbor)
+                    if neighbor.owner == self.player:
+                        reachable = True
             print("    Total Access Points: {0}".format(len(access_points)))
             print("    Total Neighbors: {0}".format(len(neighbors)))
             
@@ -145,7 +155,7 @@ class ContinentBot:
             
             #If we own all of the territories set the utility to the smallest possible number. TODO: How to properly do this in Python?
             utility = -1000
-            if territories_owned != len(continent.territories):
+            if territories_owned != len(continent.territories) and reachable:
                 utility = continent.bonus - len(continent.territories) - len(access_points) - len(neighbors) - worst_neighbor_count + 2 * territories_owned + neutral_territories
             print("    Utility: {0}".format(utility))
             utilities[continent] = utility
