@@ -17,6 +17,7 @@
 
 import json
 import urllib.request
+from graph.base import Graph
 from pyFish.Moves import *
 
 WARFISH_URL = 'http://216.169.106.90/war/services/rest'
@@ -90,10 +91,11 @@ class Game:
         return move_result
 
 """A map in Warfish is made up of territories, which can be organized into continents."""
-class Map:
+class Map(Graph):
     
     def __init__(self, map_dictionary, board_dictionary, continents_dictionary, board_state_dictionary, players_dictionary):
-        self.territories = {item['id'] : Territory(item) for item in map_dictionary}
+        super().__init__()
+        self.territories = [self.add_node(Territory(item)) for item in map_dictionary]
         self.continents = {item['id'] : Continent(item, self.territories) for item in continents_dictionary}
         #Each board element has two ids. a is the attacking country and b is the defending country.
         for item in board_dictionary:
